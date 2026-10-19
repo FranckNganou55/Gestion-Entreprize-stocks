@@ -1,0 +1,30 @@
+ ✅ PayDunya : configuré dès que les trois clés sont présentes
+ ✅ PayDunya : endpoints de production et de sandbox connus — http://127.0.0.1:10374/api/v1
+ ✅ PayDunya : POST sur /checkout-invoice/create — /api/v1/checkout-invoice/create
+ ✅ PayDunya : en-têtes MasterKey, PrivateKey et Token transmis
+ ✅ PayDunya : montant et devise FCFA dans invoice.total_amount — total_amount=11500
+ ✅ PayDunya : store.name obligatoire présent — INVENTA GESTYPRO
+ ✅ PayDunya : notre référence voyague dans custom_data — {"reference":"AB-2026-9001","entreprise_id":1,"formule":"mensuel"}
+ ✅ PayDunya : le client est un enfant du nœud invoice (pré-remplissage) — {"name":"Awa NKOLO","email":"awa@exemple.cm","phone":"237699112233"}
+ ✅ PayDunya : l’URL de callback (IPN) est transmise — https://exemple.cm/api/psp/paydunya/ipn
+ ✅ PayDunya : URL de paiement et jeton extraits de la réponse — test_ABC123
+ ✅ PayDunya : échec de création signalé (response_code ≠ 00) — Invalid private key
+ ✅ PayDunya : montant minimum 100 FCFA contrôlé — Le montant minimum accepté par PayDunya est de 100 FCFA
+ ✅ PayDunya : statut « completed » traduit en « valide » — completed → valide
+ ✅ PayDunya : montant, reçu et référence relus — montant=11500 ref=AB-2026-9001
+ ✅ PayDunya : signature SHA-512 de la MasterKey reconnue
+ ✅ PayDunya : GET sur /checkout-invoice/confirm/{token} — /api/v1/checkout-invoice/confirm/test_ABC123
+ ✅ PayDunya : statut « pending » traduit en « en_attente » — pending → en_attente
+ ✅ PayDunya : statut « cancelled » traduit en « rejete » — cancelled → rejete
+ ✅ PayDunya : statut « failed » traduit en « rejete » — failed → rejete
+ ✅ PayDunya : signature SHA-512 invalide détectée
+ ✅ PayDunya : notification traitée puis re-vérifiée chez le PSP — valide jeton=test_ABC123
+ ✅ PayDunya : notification avec nœud « data » objet acceptée
+ ✅ PayDunya : notification sans token refusée — token de facture manquant
+ ✅ Sélecteur : PayDunya actif par défaut — paydunya
+ ✅ Sélecteur : les deux adaptateurs exposent la même interface
+ ✅ Sélecteur : le prestataire actif est bien PayDunya
+ ✅ Sélecteur : bascule par variable d’environnement
+ ✅ Sélecteur : prestataire inconnu ignoré (retour au défaut)
+
+28/28 vérifications réussies.

@@ -1,0 +1,36 @@
+{
+  "name": "inventa-gestypro",
+  "version": "1.0.0",
+  "description": "Inventa GestyPro — gestion multi-magasins : inventaires, stocks, caisse, ventes, achats, personnel, rapports et abonnements",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node tests/tout.js",
+    "seed": "node -e \"require('./server/seed').reinitialiser();\"",
+    "test:exigences": "node tests/exigences.js",
+    "test:verification-proprietaire": "node tests/verification-proprietaire.js",
+    "test:paiements": "node tests/paiements-securises.js",
+    "test:caisse": "node tests/caisse-promotions.js"
+  },
+  "keywords": [
+    "gestion",
+    "shopping",
+    "magasins",
+    "stocks",
+    "caisse",
+    "pos"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.11.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^10.0.14"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}

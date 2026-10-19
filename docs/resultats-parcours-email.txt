@@ -1,0 +1,27 @@
+ ✅ Informations publiques d’inscription disponibles (tarifs, paiement, support)
+ ✅ Vérification de disponibilité de l’email professionnel
+ ✅ Entreprise créée avec les 7 informations demandées
+ ✅ Essai gratuit de 7 jours accordé automatiquement
+ ✅ Inscription : un email de vérification est annoncé
+ ✅ Inscription : l’email est consigné (envoyé ou simulé sans SMTP)
+ ✅ Compte non vérifié : l’accès aux modules est refusé (403)
+ ✅ Compte non vérifié : l’écran de vérification reste accessible
+ ✅ Vérification : un code erroné est refusé (400)
+ ✅ Un code à 6 chiffres a bien été généré pour cet email
+ ✅ Vérification : le code reçu par email débloque le compte
+ ✅ Compte vérifié : l’accès aux modules est rétabli (200)
+ ✅ L’administrateur retrouve son entreprise (NIU + logo enregistrés)
+ ✅ Espace « Aide » : WhatsApp 654 32 42 82 exposé à l’entreprise
+ ✅ L’administrateur crée ses boutiques
+ ✅ Connexion du compte propriétaire (franck06.nganou02oumbe2004@gmail.com)
+ ✅ Le propriétaire voit l’entreprise nouvellement créée parmi toutes les autres
+ ✅ Toutes les informations de l’entreprise sont visibles (email, NIU, date de création, ville)
+ ✅ Le propriétaire voit tous les magasins/boutiques créés
+ ✅ Le propriétaire voit les comptes et les paiements de cette entreprise
+ ✅ L’entreprise déclare son paiement Orange Money (référence AB-… et 11 500 FCFA)
+ ✅ Page des paiements du propriétaire : le paiement de cette entreprise y figure
+ ✅ Le propriétaire valide le paiement → abonnement actif 30 jours
+ ✅ Tableau de bord du propriétaire (entreprises, boutiques, CA, encaissements)
+ ✅ Nettoyage : entreprise de test supprimée par le propriétaire
+
+25/25 vérifications réussies.

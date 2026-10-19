@@ -1,0 +1,20 @@
+ ✅ Connexion administrateur
+ ✅ Des produits actifs existent — Ampoule LED 9 W
+ ✅ Un produit peut être créé sans prix de vente (201) — HTTP 201
+ ✅ Le produit sans prix a un prix de vente à 0 — prix_vente=0
+ ✅ Un magasin de stock se crée avec dotation (201) — HTTP 201
+ ✅ Le magasin créé porte le type « magasin » — type=magasin
+ ✅ La dotation initiale a alimenté le stock du magasin (10) — 10
+ ✅ Un magasin de stock ne peut pas encaisser de vente (400) — Ce point de vente est un magasin de stock : il ne peut pas encaisser de ventes.
+ ✅ Une boutique se crée avec dotation (201) — HTTP 201
+ ✅ La boutique porte le type « boutique » — type=boutique
+ ✅ La boutique encaisse une vente (200/201) — HTTP 201 
+ ✅ Le prix donné à la vente est mémorisé sur le produit (750) — prix_vente=750
+ ✅ L’aperçu réseau répond (200) — HTTP 200
+ ✅ L’aperçu distingue magasins et boutiques
+ ✅ Le magasin montre ses entrées du jour (10) — 10
+ ✅ La boutique montre sa vente du jour — 1
+ ✅ Les points de vente de test sont supprimés — mag=200 bout=200
+ ✅ Nettoyage : produit de test supprimé
+
+18/18 vérifications réussies.

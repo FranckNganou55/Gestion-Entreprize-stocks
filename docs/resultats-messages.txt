@@ -1,0 +1,20 @@
+ ✅ Connexions (propriétaire, admin, caissière)
+ ✅ Le propriétaire voit les admins de toutes les entreprises — admin@shoppingplus.cm, interface.1792394753466@entreprise.cm
+ ✅ L’administrateur voit les profils de son entreprise
+ ✅ La caissière voit son administrateur comme destinataire
+ ✅ Le propriétaire envoie un message à l’admin (201) — HTTP 201
+ ✅ L’admin reçoit le message du propriétaire
+ ✅ Le message reçu est marqué « nouveau » (non lu)
+ ✅ L’accusé de lecture fonctionne
+ ✅ L’admin envoie un message à la caissière (201) — HTTP 201
+ ✅ La caissière reçoit la consigne
+ ✅ Un destinataire hors périmètre est refusé (400) — HTTP 400
+ ✅ Le message est aussi consigné dans le journal des emails — 16 ligne(s)
+ ✅ Abonnement expiré : les écritures sont refusées (402) — ABONNEMENT_EXPIRE
+ ✅ Un message « abonnement expiré » arrive à l’administrateur — Bienvenue sur la plateforme | Abonnement expiré — mise à jour requise
+ ✅ Le propriétaire réactive l’entreprise (geste) — HTTP 200
+ ✅ Après réactivation, l’admin peut à nouveau écrire — HTTP 201
+ ✅ Nettoyage : abonnement de démo restauré — essai / 2026-10-26
+ ✅ Nettoyage : messages de test supprimés
+
+18/18 vérifications réussies.

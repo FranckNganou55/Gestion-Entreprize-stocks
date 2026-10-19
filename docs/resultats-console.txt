@@ -1,0 +1,32 @@
+ ✅ Menu propriétaire : page Ventes présente — aide, messages, plateforme, plateforme-entreprises, plateforme-paiements, plateforme-mails, plateforme-parametres, plateforme-ventes, plateforme-classement, plateforme-tarifs
+ ✅ Menu propriétaire : page Classement présente
+ ✅ Menu propriétaire : page Abonnements & tarifs présente
+ ✅ Menu propriétaire : aucune page de gestion d’entreprise
+ ✅ Ventes : KPI « Déjà encaissé » affiché
+ ✅ Ventes : filtres (statut, service, entreprise, dates)
+ ✅ Ventes : export CSV disponible
+ ✅ Ventes : filtre appliqué sans erreur — 3 ligne(s) affichée
+ ✅ Classement : podium affiché
+ ✅ Classement : tableau avec score et palier
+ ✅ Classement : sélecteur de tri — 6 critères
+ ✅ Classement : tri par montant encaissé
+ ✅ Tarifs : formules listées avec durée et montant
+ ✅ Tarifs : bouton « Augmenter les tarifs »
+ ✅ Tarifs : section codes de réduction
+ ✅ Tarifs : état du prestataire affiché
+ ✅ Tarifs : modale « nouvelle formule » (durée + montant libres)
+ ✅ Tarifs : modale « nouveau code de réduction »
+ ✅ Tarifs : modale d’augmentation (toutes formules ou une seule)
+ ✅ Tarifs : sélecteur du prestataire actif (PayDunya / CinetPay)
+ ✅ Tarifs : clés PayDunya (master, privée, token) + mode
+ ✅ Tarifs : CinetPay conservé en secours
+ ✅ Propriétaire : aucune erreur JavaScript
+ ✅ Abonnement : formules dynamiques du propriétaire — mensuel, annuel, trimestre
+ ✅ Abonnement : champ code de réduction
+ ✅ Abonnement : réduction appliquée (11 500 → 9 200 FCFA) — 9 200 FCFA
+ ✅ Abonnement : message de remise affiché
+ ✅ Abonnement : code inconnu signalé — ❌ Code de réduction inconnu
+ ✅ Abonnement : changement de formule recalcule le montant — 132 000 FCFA
+ ✅ Administrateur : aucune erreur JavaScript
+
+30/30 vérifications réussies.

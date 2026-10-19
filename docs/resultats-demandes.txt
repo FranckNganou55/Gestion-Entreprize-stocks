@@ -1,0 +1,25 @@
+
+> inventa-gestypro@1.0.0 test
+> node tests/tout.js
+
+Serveur attendu sur http://localhost:3000
+
+
+  smoke                      88/88  ✅
+  multi-entreprises          41/41  ✅
+  parcours-proprietaire      25/25  ✅
+  interface-parcours         29/29  ✅
+  temps-reel                 14/14  ✅
+  apparence                  14/14  ✅
+  nouvelles-options          64/64  ✅
+  rh                         89/89  ✅
+  psp-paydunya               28/28  ✅
+  abonnements-tarifs         38/38  ✅
+  console-proprietaire       30/30  ✅
+  inventaires                41/41  ✅
+  inventaires-ui             26/26  ✅
+  moyens-paiement            26/26  ✅
+  boutiques-magasins         18/18  ✅
+  messages                   18/18  ✅
+  ———————————————————————————————————
+  TOTAL                    589/589  ✅ tout est vert

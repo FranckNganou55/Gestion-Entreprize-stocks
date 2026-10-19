@@ -1,0 +1,31 @@
+ ✅ Écran d’accueil : bouton « Créer mon entreprise » visible
+ ✅ Page d’inscription : les 7 informations demandées sont présentes
+ ✅ Page d’inscription : le logo est bien un champ photo (image)
+ ✅ Page d’inscription : tarifs affichés (11 500 / 132 000 FCFA)
+ ✅ Page d’inscription : retour possible vers la connexion
+ ✅ Après inscription : l’administrateur accède à l’application (menus affichés)
+ ✅ Après inscription : accès limité à l’écran de vérification de l’email
+ ✅ Écran de vérification : l’adresse email du compte est rappelée
+ ✅ Écran de vérification : bouton « Renvoyer le code » présent
+ ✅ Écran de vérification : un code erroné est refusé
+ ✅ Email de vérification : un code à 6 chiffres a bien été généré
+ ✅ Email vérifié : l’application devient accessible
+ ✅ Après vérification : le blocage est levé dans l’application
+ ✅ Après vérification : le tableau de bord s’affiche
+ ✅ Après inscription : le nom de son entreprise apparaît dans l’interface
+ ✅ Espace « Aide » présent dans le menu
+ ✅ Espace « Aide » : lien WhatsApp vers le 654 32 42 82
+ ✅ Espace « Aide » : numéro affiché 654 32 42 82
+ ✅ Espace « Aide » : numéros Orange Money et MTN MoMo rappelés
+ ✅ L’administrateur crée sa boutique depuis l’interface
+ ✅ Le propriétaire a un menu « Plateforme »
+ ✅ Console : toutes les entreprises créées sont listées (dont la nouvelle)
+ ✅ Console : statistiques globales (entreprises, boutiques, comptes, CA)
+ ✅ Console : page « Paiements » dans le menu
+ ✅ Console : page des paiements de toutes les entreprises affichée
+ ✅ Console : la nouvelle entreprise est sélectionnable
+ ✅ Console : tous les magasins/boutiques de cette entreprise sont visibles
+ ✅ Console : informations complètes (NIU, responsable, date de création)
+ ✅ Nettoyage : entreprise de test supprimée
+
+29/29 vérifications réussies.

@@ -1,0 +1,93 @@
+
+────────── TESTS RH (employés, salaires, recrutements) ──────────
+  ✓ Connexion de l’administrateur
+  ✓ Liste du personnel accessible
+  ✓ La démo contient du personnel
+  ✓ Masse salariale calculée
+  ✓ Compteur de dossiers incomplets présent
+  ✓ Des CNI sont renseignées dans la démo
+  ✓ Tous les champs du dossier sont renvoyés
+  ✓ Création d’un employé
+  ✓ Le statut de dossier transmis est respecté (non forcé à « complet »)
+  ✓ Lecture d’une fiche employé
+  ✓ Mise à jour du dossier (salaire + CNPS)
+  ✓ Grille de paie du mois courant
+  ✓ Période au format AAAA-MM
+  ✓ Totaux de la masse salariale fournis
+  ✓ Enregistrement d’un versement (net = base + primes − retenues)
+  ✓ Un seul versement par employé et par mois (upsert)
+  ✓ Le net suit la dernière saisie
+  ✓ Marquage en masse d’une période : chaque employé réglé
+  ✓ Aucun versement ne reste à payer après le marquage en masse
+  ✓ Second marquage de la même période : rien à faire
+  ✓ Catégories de pièces disponibles
+  ✓ Téléversement d’un PDF
+  ✓ Le PDF est stocké sous un nom opaque (pas le nom d’origine)
+  ✓ Téléchargement du PDF : mêmes octets
+  ✓ En-têtes de sécurité du fichier
+  ✓ Extension non PDF refusée (400, pas 500)
+  ✓ Contenu non PDF refusé (400, pas 500)
+  ✓ Employé inexistant : 404
+  ✓ Le détail expose les pièces téléversées
+  ✓ Le compteur de pièces figure dans la liste du personnel
+  ✓ Enregistrement d’une candidature
+  ✓ Le poste visé est enregistré
+  ✓ Statut initial « reçu »
+  ✓ Passage en entretien
+  ✓ Embauche d’une candidature retenue
+  ✓ Un employé est créé avec un code
+  ✓ La candidature est liée à l’employé créé
+  ✓ Un employé issu d’une candidature n’est pas marqué « dossier complet » sans pièce
+  ✓ Double embauche d’une même candidature refusée
+  ✓ Refus d’une candidature
+  ✓ Statut de candidature inconnu refusé
+  ✓ Une caissière ne voit pas le personnel (403)
+  ✓ Une caissière ne voit pas les salaires (403)
+  ✓ Une caissière ne peut pas téléverser de document (403)
+  ✓ Accès anonyme refusé (401)
+  ✓ Téléchargement anonyme d’un document refusé (401)
+  ✓ Seconde entreprise créée pour le test de cloisonnement
+  ✓ Une autre entreprise ne voit pas le personnel de la première
+  ✓ Lecture de la fiche d’une autre entreprise : 404
+  ✓ Modification de la fiche d’une autre entreprise : 404
+  ✓ Téléversement chez une autre entreprise : 404
+  ✓ Paiement du personnel d’une autre entreprise : 404
+  ✓ Téléchargement du PDF d’une autre entreprise : 404
+  ✓ Le propriétaire peut supprimer une entreprise cliente
+  ✓ La suppression emporte le personnel, les paies et les candidatures
+  ✓ … et efface les PDF du personnel du disque
+  ✓ Le menu affiche « Ressources humaines »
+  ✓ Entrée « Employés » dans le menu
+  ✓ Entrée « Salaires » dans le menu
+  ✓ Entrée « Recrutements » dans le menu
+  ✓ Grille de paie affichée
+  ✓ KPI de la masse salariale en FCFA
+  ✓ KPI du reste à payer affiché
+  ✓ Sélecteur de mois présent
+  ✓ Bouton « tout marquer payé » présent
+  ✓ Courbe d’évolution de la masse salariale
+  ✓ Vivier de candidatures affiché
+  ✓ Bouton « nouvelle candidature »
+  ✓ Filtre par statut de candidature
+  ✓ Onglet « dossiers » présent
+  ✓ Liste des dossiers du personnel
+  ✓ Chaque ligne du personnel ouvre son dossier
+  ✓ Onglet « Documents » du dossier
+  ✓ Champ de téléversement PDF dans le dossier
+  ✓ Sélecteur de catégorie de pièce
+  ✓ Le dossier affiche l’état civil (CNI, contrat, salaire)
+  ✓ Le dossier liste les pièces ou signale leur absence
+  ✓ Colonne CNI dans la liste du personnel
+  ✓ Accès au dossier depuis la liste
+  ✓ Bouton « nouvel employé »
+  ✓ Le formulaire couvre l’état civil (date de naissance)
+  ✓ Le formulaire couvre les pièces administratives (CNPS)
+  ✓ Le formulaire couvre la formation
+  ✓ Le formulaire couvre le contact d’urgence
+  ✓ Préparation : une pièce est attachée à l’employé issu d’une candidature
+  ✓ Supprimer la candidature embauchée supprime aussi la fiche créée
+  ✓ … et efface le PDF du disque
+  ✓ Suppression d’une fiche employé
+  ✓ Le PDF est effacé avec la fiche
+
+  89/89 vérifications réussies
