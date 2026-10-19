@@ -71,7 +71,7 @@ App.enregistrerVue('verification', {
         <div class="carte-corps">
           <div class="bandeau ambre">
             <b>Votre compte est limité tant que votre email n'est pas confirmé.</b>
-            <div style="margin-top:4px">${etat.smtp_configure ? 'Saisissez le code à 6 chiffres demandé pour' : 'La vérification attend la configuration de l’envoi des emails pour'}
+            <div style="margin-top:4px">${etat.fournisseur === 'identity' ? 'Ouvrez le lien de confirmation envoyé à' : etat.smtp_configure ? 'Saisissez le code à 6 chiffres demandé pour' : 'La vérification attend la configuration de l’envoi des emails pour'}
               <b class="mono">${Fmt.echapper(etat.email)}</b>.</div>
           </div>
 
@@ -82,14 +82,14 @@ App.enregistrerVue('verification', {
           </div>`}
 
           <form id="form-verification" style="margin-top:14px">
-            <div class="champ">
+            <div class="champ" ${etat.fournisseur === 'identity' ? 'hidden' : ''}>
               <label>Code de vérification</label>
-              <input name="code" required inputmode="numeric" autocomplete="one-time-code"
+              <input name="code" ${etat.fournisseur === 'identity' ? 'disabled' : 'required'} inputmode="numeric" autocomplete="one-time-code"
                      maxlength="6" placeholder="Ex. 428913" style="letter-spacing:6px;text-align:center;font-size:20px">
             </div>
             <div class="barre-outils">
-              <button class="btn primaire" type="submit">✅ Valider mon email</button>
-              <button class="btn" type="button" id="v-renvoyer">🔁 Renvoyer le code</button>
+              <button class="btn primaire" type="submit" ${etat.fournisseur === 'identity' ? 'hidden' : ''}>✅ Valider mon email</button>
+              <button class="btn" type="button" id="v-renvoyer">🔁 Renvoyer l’email</button>
             </div>
           </form>
 

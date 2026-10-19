@@ -1,0 +1,201 @@
+{
+  "abonnements": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "candidats": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "categories": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "clients": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "codes_verification": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "commandes_achat": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "commandes_achat_lignes": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "documents_candidat": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "documents_employe": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "employes": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "entreprises": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "formules": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "fournisseurs": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "inventaires": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "inventaires_lignes": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "journal_evenements": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "magasins": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "mails_envoyes": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "messages": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "mouvements_stock": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "paiements_abonnement": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "parametres": {
+    "id": false,
+    "keys": [
+      "entreprise_id",
+      "cle"
+    ]
+  },
+  "produits": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "promotions_clients": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "promotions_utilisations": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "reductions": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "roles": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "salaires": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "stocks": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "transferts": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "users": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "ventes": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  },
+  "ventes_lignes": {
+    "id": true,
+    "keys": [
+      "id"
+    ]
+  }
+}

@@ -6,6 +6,7 @@
  * Réinitialiser les données de démonstration : npm run seed
  */
 const path = require('path');
+const { cloud } = require('./runtime');
 const express = require('express');
 const cors = require('cors');
 const { db } = require('./db');
@@ -28,7 +29,7 @@ synchroniserRoles();
 console.log(`  ↳ Rôles synchronisés : ${db.prepare('SELECT COUNT(*) c FROM roles').get().c} rôles, ${TOUTES_PERMISSIONS.length} permissions disponibles.`);
 
 /* --- Propriétaire de la plateforme (monitoring de toutes les entreprises) --- */
-Entreprises.assurerProprietaire();
+if (!cloud()) Entreprises.assurerProprietaire();
 
 /* --- Journal des opérations (rafraîchissement en temps réel des écrans) --- */
 Evenements.installer();
@@ -37,7 +38,7 @@ Evenements.installer();
 Mails.installer();
 
 /* --- Première initialisation : données de démonstration --- */
-const cree = seedDatabase();
+const cree = !cloud() && seedDatabase();
 if (cree) console.log('  ↳ Données de démonstration créées (entreprise, 5 magasins, produits, 120 jours de ventes).');
 
 // L'alerte est également envoyée si aucun utilisateur n'ouvre une page métier.
@@ -45,7 +46,7 @@ const verifierExpirations = () => {
   try { Abonnement.notifierExpirations(); } catch (e) { console.error('Vérification des abonnements :', e.message); }
 };
 verifierExpirations();
-setInterval(verifierExpirations, 60000).unref();
+if (!cloud()) setInterval(verifierExpirations, 60000).unref();
 
 /* --- API : état du service (publique) --- */
 app.get('/api/sante', (req, res) => {
@@ -97,6 +98,8 @@ app.use('/api/messages', require('./routes/messages'));         // messagerie in
 app.use('/api', require('./routes/rh'));            // personnel, salaires, recrutement
 app.use('/api/evenements', Evenements.router);
 
+app.use('/api', (req, res) => res.status(404).json({ erreur: 'Route API introuvable.' }));
+
 /* --- Fichiers statiques (interface) --- */
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -108,6 +111,7 @@ app.get(/.*/, (req, res, next) => {
 
 /* --- Gestion centralisée des erreurs --- */
 app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
   const msg = String(err.message || '');
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({ erreur: 'Le corps de la requête doit être un JSON valide.' });
@@ -118,12 +122,12 @@ app.use((err, req, res, next) => {
   /* Une erreur métier porte son code HTTP (ex. 400 pour un champ invalide) :
      on le respecte au lieu de tout remonter en 500. */
   const statut = Number(err.statut) >= 400 && Number(err.statut) <= 599 ? Number(err.statut) : null;
-  if (!statut) console.error('[ERREUR]', req.method, req.originalUrl, '-', err.message);
+  if (!statut) console.error('[ERREUR]', req.method, req.path, err.code || 'INTERNAL');
   if (msg.includes('UNIQUE constraint failed')) {
     return res.status(400).json({ erreur: 'Cet enregistrement existe déjà (code ou email en doublon).' });
   }
   if (statut) return res.status(statut).json({ erreur: msg });
-  res.status(500).json({ erreur: 'Erreur serveur : ' + err.message });
+  res.status(500).json({ erreur: 'Service temporairement indisponible. Réessayez.' });
 });
 
 /* --- Arrêt propre : on regroupe tout dans le fichier .db (mode WAL) --- */
@@ -135,29 +139,9 @@ function arreter(signal) {
   } catch (e) { /* rien */ }
   process.exit(0);
 }
-process.on('SIGINT', () => arreter('SIGINT'));
-process.on('SIGTERM', () => arreter('SIGTERM'));
-
-app.listen(PORT, HOST, () => {
-  console.log('');
-  console.log('  ╔═══════════════════════════════════════════════════════════╗');
-  console.log('  ║   INVENTA GESTYPRO — Gestion multi-magasins          ║');
-  console.log('  ╚═══════════════════════════════════════════════════════════╝');
-  console.log(`   Serveur prêt sur http://localhost:${PORT}`);
-  console.log('');
-  console.log('   Formules : 11 500 FCFA / mois — 132 000 FCFA / an — 7 jours d\'essai gratuit');
-  console.log('   Paiement : Orange Money 693007397 (#150#) — MTN MoMo 654324282 (*126#)');
-  console.log('   Assistance WhatsApp : 654324282');
-  console.log('');
-  console.log('   PROPRIÉTAIRE DE LA PLATEFORME (monitoring de toutes les entreprises) :');
-  console.log('   • ' + Entreprises.PROPRIETAIRE.email + '  /  ' + Entreprises.PROPRIETAIRE.mot_de_passe);
-  console.log('');
-  console.log('   Comptes de démonstration d\'une entreprise cliente :');
-  console.log('   • Administrateur général ....... admin@shoppingplus.cm        / Admin@2026');
-  console.log('   • Gestionnaire réseau .......... gestion@shoppingplus.cm      / Gest@2026');
-  console.log('   • Responsable boutique Akwa .... chef.akwa@shoppingplus.cm    / Chef@2026');
-  console.log('   • Caissière Bastos ............. caisse1@shoppingplus.cm      / Caisse@2026');
-  console.log('   • Agent de stock Bafoussam ..... stock@shoppingplus.cm        / Stock@2026');
-  console.log('   • Agent de réception Mvog-Mbi .. reception.mvogmbi@shoppingplus.cm / Reception@2026');
-  console.log('');
-});
+if (require.main === module) {
+  process.on('SIGINT', () => arreter('SIGINT'));
+  process.on('SIGTERM', () => arreter('SIGTERM'));
+  app.listen(PORT, HOST, () => console.log('Serveur GestyPro démarré.'));
+}
+module.exports = app;

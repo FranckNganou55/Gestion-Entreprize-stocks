@@ -209,7 +209,7 @@ router.post('/rh/employes/:id/documents',
 
 /** Téléchargement d'un document. */
 router.get('/rh/documents/:id', requireModule('recrutement'), wrap((req, res) => {
-  const { document: d, chemin } = RH.documentPourTelechargement(Number(req.params.id), entrepriseId(req));
+  const { document: d, contenu } = RH.documentPourTelechargement(Number(req.params.id), entrepriseId(req));
   // ASCII uniquement dans l'en-tête : le nom original peut contenir des accents.
   const ascii = String(d.nom_original).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -217,7 +217,7 @@ router.get('/rh/documents/:id', requireModule('recrutement'), wrap((req, res) =>
   res.setHeader('Content-Length', d.taille);
   res.setHeader('Content-Disposition', `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(d.nom_original)}`);
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.sendFile(path.resolve(chemin));
+  res.send(contenu);
 }));
 
 router.delete('/rh/documents/:id', requirePerm('recrutement.gerer'), wrap((req, res) => {
@@ -262,14 +262,14 @@ router.post('/rh/candidats/:id/documents',
 
 /** Téléchargement d'un document de candidature. */
 router.get('/rh/documents-candidat/:id', requireModule('recrutement'), wrap((req, res) => {
-  const { document: d, chemin } = RH.documentCandidatPourTelechargement(Number(req.params.id), entrepriseId(req));
+  const { document: d, contenu } = RH.documentCandidatPourTelechargement(Number(req.params.id), entrepriseId(req));
   const ascii = String(d.nom_original).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9._-]/g, '_');
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Length', d.taille);
   res.setHeader('Content-Disposition', `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(d.nom_original)}`);
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.sendFile(path.resolve(chemin));
+  res.send(contenu);
 }));
 
 router.get('/rh/candidats', requireModule('recrutement'), wrap((req, res) => {

@@ -55,10 +55,16 @@ function support() {
   };
 }
 
-router.post('/login', wrap((req, res) => {
+router.post('/login', wrap(async (req, res) => {
   const { email, mot_de_passe } = req.body || {};
   if (!email || !mot_de_passe) return res.status(400).json({ erreur: 'Email et mot de passe obligatoires' });
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(String(email).trim().toLowerCase());
+  let user = db.prepare('SELECT * FROM users WHERE email = ?').get(String(email).trim().toLowerCase());
+  if (require('../runtime').cloud() && (!user || user.role === 'super_admin')) {
+    try {
+      user = await require('../identity.cjs').ownerLogin(email, mot_de_passe);
+      if (user?.role === 'super_admin') return res.json({ token: sign(user), utilisateur: profil(user) });
+    } catch { return res.status(401).json({ erreur: 'Identifiants incorrects ou email non confirmé.' }); }
+  }
   if (!user || !bcrypt.compareSync(mot_de_passe, user.mot_de_passe)) {
     return res.status(401).json({ erreur: 'Identifiants incorrects' });
   }

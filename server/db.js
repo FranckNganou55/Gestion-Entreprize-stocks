@@ -4,17 +4,18 @@
  */
 const path = require('path');
 const fs = require('fs');
-const Database = require('better-sqlite3');
-
+const { cloud, env } = require('./runtime');
 const DATA_DIR = path.join(__dirname, '..', 'data');
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-
-/* SP_DB permet de pointer vers un autre fichier : pratique pour rejouer les
-   migrations sur une copie de la base sans toucher aux données réelles. */
-const FICHIER_DB = process.env.SP_DB || path.join(DATA_DIR, 'shopmanager.db');
-const db = new Database(FICHIER_DB);
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+let db;
+if (cloud()) {
+  db = require('./postgres.cjs').db;
+} else {
+  const Database = require('better-sqlite3');
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  db = new Database(env('SP_DB') || path.join(DATA_DIR, 'shopmanager.db'));
+  db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
+}
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS roles (
@@ -433,7 +434,7 @@ CREATE INDEX IF NOT EXISTS idx_mvt_produit ON mouvements_stock(produit_id, magas
 CREATE INDEX IF NOT EXISTS idx_stocks_magasin ON stocks(magasin_id);
 `;
 
-db.exec(SCHEMA);
+if (!cloud()) db.exec(SCHEMA);
 
 /* ---------------- Migrations légères (bases déjà existantes) ---------------- */
 function indexExiste(nom) {
@@ -655,7 +656,7 @@ function migrer() {
     console.log(`  ↳ Migration : ${orphelins} fiche(s) rattachée(s) à l'entreprise de démonstration.`);
   }
 }
-migrer();
+if (!cloud()) migrer();
 
 /* ---------------- Paramètres par défaut ---------------- */
 
@@ -704,3 +705,10 @@ const initialiserParam = db.prepare(
 for (const [k, v] of Object.entries(PARAMS_PLATEFORME)) initialiserParam.run(k, v);
 
 module.exports = { db, PARAMS_PLATEFORME, parametresEntreprise, setParam };
+
+if (cloud()) {
+  const formula = db.prepare(`INSERT INTO formules (code, libelle, duree_jours, montant, ordre, note)
+    VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (code) DO NOTHING`);
+  formula.run('mensuel', 'Abonnement mensuel', 30, 11500, 1, '30 jours');
+  formula.run('annuel', 'Abonnement annuel', 365, 132000, 2, '12 mois');
+}

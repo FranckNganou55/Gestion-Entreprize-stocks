@@ -10,6 +10,7 @@ const { parametresEntreprise } = require('../db');
 const A = require('../abonnement');
 const Entreprises = require('../entreprises');
 const Mails = require('../mails');
+const { cloud } = require('../runtime');
 
 const router = express.Router();
 
@@ -55,12 +56,27 @@ router.get('/email-disponible', wrap((req, res) => {
  */
 router.post('/inscription', wrap(async (req, res) => {
   const donnees = req.body || {};
+  const ownerEmail = require('../runtime').env('OWNER_EMAIL') || Entreprises.PROPRIETAIRE.email;
+  if (cloud() && String(donnees.email || '').trim().toLowerCase() === ownerEmail.trim().toLowerCase()) {
+    return res.status(400).json({ erreur: 'Cette adresse est réservée au propriétaire de la plateforme. Activez cet accès par invitation Netlify et utilisez une autre adresse pour votre entreprise.' });
+  }
   const r = Entreprises.creerEntreprise(donnees);
   const user = db.prepare('SELECT * FROM users WHERE id=?').get(r.admin.id);
+  let provider;
+  if (cloud()) {
+    try { provider = await require('../identity.cjs').register(donnees); }
+    catch {
+      Entreprises.supprimerEntreprise(r.entreprise.id);
+      return res.status(400).json({ erreur: 'L’inscription n’a pas abouti. Vérifiez votre adresse et réessayez dans quelques instants.' });
+    }
+    if (provider.confirmedAt) {
+      db.prepare("UPDATE users SET email_verifie=1, email_verifie_at=datetime('now','localtime') WHERE id=?").run(user.id);
+    }
+  }
   const langue = ['fr', 'en', 'zh'].includes(donnees.langue) ? donnees.langue : 'fr';
 
   /* Email de vérification envoyé à l'administrateur qui s'inscrit. */
-  const envoi = await Mails.envoyerVerification({ user, entreprise: r.entreprise, langue });
+  const envoi = cloud() ? { statut: 'envoye', smtp: true } : await Mails.envoyerVerification({ user, entreprise: r.entreprise, langue });
 
   res.status(201).json({
     ok: true,
@@ -71,7 +87,8 @@ router.post('/inscription', wrap(async (req, res) => {
       jours_restants: A.etat(r.entreprise.id).jours_restants,
     },
     verification: {
-      requise: true,
+      requise: !provider?.confirmedAt,
+      fournisseur: cloud() ? 'identity' : 'smtp',
       email: user.email,
       statut_envoi: envoi.statut,          // envoye | simule | erreur
       smtp: envoi.smtp,
@@ -90,6 +107,10 @@ router.post('/verification/renvoyer', auth, wrap(async (req, res) => {
   if (user.role === 'super_admin') return res.json({ ok: true, verification_requise: false, deja_verifie: true });
   if (user.email_verifie) return res.json({ ok: true, deja_verifie: true });
   const entreprise = db.prepare('SELECT * FROM entreprises WHERE id=?').get(user.entreprise_id) || {};
+  if (cloud()) {
+    await require('../identity.cjs').resend(user.email);
+    return res.json({ ok: true, statut_envoi: 'envoye', fournisseur: 'identity', email: user.email });
+  }
   const envoi = await Mails.envoyerVerification({ user, entreprise, langue: user.langue || 'fr' });
   res.json({ ok: true, statut_envoi: envoi.statut, smtp: envoi.smtp, email: user.email });
 }));
@@ -110,7 +131,8 @@ router.get('/verification', auth, wrap((req, res) => {
     verification_requise: user.role !== 'super_admin' && !user.email_verifie,
     email: user.email,
     verifie_at: user.email_verifie_at || null,
-    smtp_configure: Mails.configSmtp().configure,
+    smtp_configure: cloud() || Mails.configSmtp().configure,
+    fournisseur: cloud() ? 'identity' : 'smtp',
   });
 }));
 

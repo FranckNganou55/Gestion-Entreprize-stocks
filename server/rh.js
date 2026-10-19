@@ -10,6 +10,8 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { db } = require('./db');
 const { param } = require('./utils');
+const { cloud } = require('./runtime');
+const documents = require('./documents');
 
 /* Les PDF téléversés sont écrits sur disque : trop lourds pour la base. */
 const DOSSIER_DOCUMENTS = path.join(__dirname, '..', 'data', 'documents');
@@ -372,7 +374,7 @@ function supprimerDocumentsDe(employeId) {
     // Le nom stocké est généré par l'application : on refuse toute traversée de dossier.
     const base = path.basename(String(d.nom_stocke || ''));
     if (!base) return;
-    fs.promises.unlink(cheminDocument(base)).catch(() => {});
+    documents.remove(base);
   });
   db.prepare('DELETE FROM documents_employe WHERE employe_id=?').run(employeId);
 }
@@ -402,9 +404,9 @@ function enregistrerDocument({ entrepriseId, employe_id, categorie = 'autre', no
   if (!e) throw erreur('Employé introuvable', 404);
   const { nomOriginal, tampon } = validerPdf({ nom, contenu });
 
-  if (!fs.existsSync(DOSSIER_DOCUMENTS)) fs.mkdirSync(DOSSIER_DOCUMENTS, { recursive: true });
+  if (!cloud() && !fs.existsSync(DOSSIER_DOCUMENTS)) fs.mkdirSync(DOSSIER_DOCUMENTS, { recursive: true });
   const nomStocke = 'emp-' + e.id + '-' + Date.now() + '-' + crypto.randomBytes(6).toString('hex') + '.pdf';
-  fs.writeFileSync(cheminDocument(nomStocke), tampon);
+  documents.put(nomStocke, tampon);
 
   const info = db.prepare(`
     INSERT INTO documents_employe (entreprise_id, employe_id, categorie, nom_original, nom_stocke,
@@ -429,14 +431,15 @@ function documentPourTelechargement(id, entrepriseId) {
   const d = db.prepare('SELECT * FROM documents_employe WHERE id=? AND entreprise_id=?').get(id, entrepriseId);
   if (!d) throw erreur('Document introuvable', 404);
   const chemin = cheminDocument(path.basename(d.nom_stocke));
-  if (!fs.existsSync(chemin)) throw erreur('Fichier absent du serveur', 404);
-  return { document: d, chemin };
+  const contenu = documents.get(path.basename(d.nom_stocke));
+  if (!contenu) throw erreur('Document introuvable', 404);
+  return { document: d, chemin, contenu };
 }
 
 function supprimerDocument(id, entrepriseId) {
   const d = db.prepare('SELECT * FROM documents_employe WHERE id=? AND entreprise_id=?').get(id, entrepriseId);
   if (!d) throw erreur('Document introuvable', 404);
-  fs.promises.unlink(cheminDocument(path.basename(d.nom_stocke))).catch(() => {});
+  documents.remove(path.basename(d.nom_stocke));
   db.prepare('DELETE FROM documents_employe WHERE id=?').run(id);
   return d;
 }
@@ -446,9 +449,9 @@ function enregistrerDocumentCandidat({ entrepriseId, candidat_id, categorie = 'a
   const c = db.prepare('SELECT id FROM candidats WHERE id=? AND entreprise_id=?').get(Number(candidat_id), entrepriseId);
   if (!c) throw erreur('Candidature introuvable', 404);
   const { nomOriginal, tampon } = validerPdf({ nom, contenu });
-  if (!fs.existsSync(DOSSIER_DOCUMENTS)) fs.mkdirSync(DOSSIER_DOCUMENTS, { recursive: true });
+  if (!cloud() && !fs.existsSync(DOSSIER_DOCUMENTS)) fs.mkdirSync(DOSSIER_DOCUMENTS, { recursive: true });
   const nomStocke = 'cand-' + c.id + '-' + Date.now() + '-' + crypto.randomBytes(6).toString('hex') + '.pdf';
-  fs.writeFileSync(cheminDocument(nomStocke), tampon);
+  documents.put(nomStocke, tampon);
   const info = db.prepare(`
     INSERT INTO documents_candidat (entreprise_id, candidat_id, categorie, nom_original, nom_stocke,
       type_mime, taille, televerse_par)
@@ -470,15 +473,16 @@ function documentCandidatPourTelechargement(id, entrepriseId) {
   const d = db.prepare('SELECT * FROM documents_candidat WHERE id=? AND entreprise_id=?').get(id, entrepriseId);
   if (!d) throw erreur('Document introuvable', 404);
   const chemin = cheminDocument(path.basename(d.nom_stocke));
-  if (!fs.existsSync(chemin)) throw erreur('Fichier absent du serveur', 404);
-  return { document: d, chemin };
+  const contenu = documents.get(path.basename(d.nom_stocke));
+  if (!contenu) throw erreur('Document introuvable', 404);
+  return { document: d, chemin, contenu };
 }
 
 function supprimerDocumentsCandidatDe(candidatId) {
   const docs = db.prepare('SELECT nom_stocke FROM documents_candidat WHERE candidat_id=?').all(candidatId);
   docs.forEach((d) => {
     const base = path.basename(String(d.nom_stocke || ''));
-    if (base) fs.promises.unlink(cheminDocument(base)).catch(() => {});
+    if (base) documents.remove(base);
   });
   db.prepare('DELETE FROM documents_candidat WHERE candidat_id=?').run(candidatId);
 }
