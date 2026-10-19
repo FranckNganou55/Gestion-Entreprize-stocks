@@ -52,6 +52,21 @@ const App = {
 
   /* --------------------------- Démarrage --------------------------- */
   async demarrer() {
+    const invitation = new URLSearchParams(location.hash.slice(1)).get('invite_token');
+    if (invitation) return this.afficherInvitation(invitation);
+    const confirmation = new URLSearchParams(location.hash.slice(1)).get('confirmation_token');
+    if (confirmation) {
+      history.replaceState(null, '', '#/connexion');
+      try {
+        const result = await Api.post('/identity/confirm', { token: confirmation });
+        Api.definirToken(result.token);
+        notifier('Adresse email confirmée');
+      } catch (error) {
+        this.afficherConnexion();
+        notifier(error.message, 'erreur');
+        return;
+      }
+    }
     if (!Api.token) return this.ecranInitial();
     try {
       const { utilisateur } = await Api.get('/auth/me');
@@ -132,6 +147,33 @@ const App = {
   },
 
   /* ---------------------------- Connexion ---------------------------- */
+  afficherInvitation(token) {
+    const root = document.getElementById('racine');
+    root.innerHTML = `<main class="centre-plein"><section class="carte carte-verification">
+      <div class="carte-entete"><h2>Activer mon accès propriétaire</h2></div>
+      <div class="carte-corps"><p>Choisissez votre mot de passe pour accepter l’invitation.</p>
+        <form id="form-invitation"><div class="champ"><label for="invitation-password">Mot de passe (12 caractères minimum)</label>
+          <input id="invitation-password" name="password" type="password" minlength="12" required autocomplete="new-password"></div>
+          <div class="champ"><label for="invitation-confirmation">Confirmer le mot de passe</label>
+          <input id="invitation-confirmation" name="confirmation" type="password" minlength="12" required autocomplete="new-password"></div>
+          <button class="btn primaire" type="submit">Activer mon compte</button><p id="invitation-erreur" role="alert"></p>
+        </form></div></section></main>`;
+    root.querySelector('form').onsubmit = async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const message = root.querySelector('#invitation-erreur');
+      const button = form.querySelector('button');
+      if (form.password.value !== form.confirmation.value) { message.textContent = 'Les mots de passe doivent être identiques.'; return; }
+      button.disabled = true;
+      try {
+        const result = await Api.post('/identity/invite', { token, password: form.password.value });
+        Api.definirToken(result.token);
+        history.replaceState(null, '', '#/plateforme');
+        await this.demarrer();
+      } catch (error) { message.textContent = error.message; button.disabled = false; }
+    };
+  },
+
   /** Première page vue : l'inscription si l'adresse le demande, sinon la connexion. */
   ecranInitial() {
     const demande = /^#\/?(inscription|creer-entreprise|creer_mon_entreprise)/.test(location.hash || '');

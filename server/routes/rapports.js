@@ -87,7 +87,7 @@ router.get('/dashboard', requireModule('dashboard'), wrap((req, res) => {
     FROM ventes_lignes l JOIN ventes v ON v.id=l.vente_id
     JOIN produits p ON p.id=l.produit_id LEFT JOIN categories c ON c.id=p.categorie_id
     WHERE v.statut='payee' AND date(v.created_at) >= date('now','localtime','-30 day') ${f.clause}
-    GROUP BY p.id ORDER BY ca DESC LIMIT 10`);
+    GROUP BY p.id, c.id ORDER BY ca DESC LIMIT 10`);
 
   const parMagasin = db.prepare(`
     SELECT m.id, m.nom, m.ville,
@@ -221,7 +221,7 @@ router.get('/rapports/produits', requireModule('rapports'), wrap((req, res) => {
     LEFT JOIN ventes_lignes l ON l.produit_id=p.id
     LEFT JOIN ventes v ON v.id=l.vente_id AND v.statut='payee' AND date(v.created_at) BETWEEN date(?) AND date(?)
     WHERE p.actif=1 AND p.entreprise_id = ?
-    GROUP BY p.id ORDER BY marge DESC`).all(d, f, ent(req));
+    GROUP BY p.id, c.id ORDER BY marge DESC`).all(d, f, ent(req));
   res.json({ debut: d, fin: f, lignes: sansPrix(req, rows, ['prix_achat', 'cout', 'marge']) });
 }));
 
@@ -256,7 +256,6 @@ router.get('/export.csv', auth, wrap((req, res, next) => {
   if (!requises.some((p) => peut(req.user, p))) {
     return res.status(403).json({ erreur: `Export non autorisé pour votre rôle` });
   }
-  next();
   const debut = req.query.debut || new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10);
   const fin = req.query.fin || new Date().toISOString().slice(0, 10);
   const magasin_id = magasinImpose(req.user) || req.query.magasin_id || null;

@@ -13,7 +13,8 @@
 const jwt = require('jsonwebtoken');
 const { db } = require('./db');
 
-const SECRET = process.env.JWT_SECRET || 'inventa-gestypro-secret-dev-2026';
+const { cloud, env } = require('./runtime');
+const SECRET = env('JWT_SECRET') || (cloud() ? require('./postgres.cjs').call('secret') : 'inventa-gestypro-secret-dev-2026');
 const DUREE = '12h';
 
 /* --------------------------------------------------------------------------

@@ -11,7 +11,8 @@
     "test:exigences": "node tests/exigences.js",
     "test:verification-proprietaire": "node tests/verification-proprietaire.js",
     "test:paiements": "node tests/paiements-securises.js",
-    "test:caisse": "node tests/caisse-promotions.js"
+    "test:caisse": "node tests/caisse-promotions.js",
+    "test:netlify": "node tests/netlify-postgres.cjs && node --experimental-strip-types tests/netlify-function.mjs && node tests/netlify-interface.cjs"
   },
   "keywords": [
     "gestion",
@@ -23,14 +24,22 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@netlify/blobs": "^11.1.4",
+    "@netlify/database": "^2.0.1",
+    "@netlify/functions": "^6.0.2",
+    "@netlify/identity": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^12.11.1",
     "cors": "^2.8.5",
+    "drizzle-orm": "^1.0.0-beta.22",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^10.0.14"
+    "nodemailer": "^10.0.14",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.2.17",
+    "drizzle-kit": "^1.0.0-beta.22",
     "jsdom": "^26.1.0"
   }
 }

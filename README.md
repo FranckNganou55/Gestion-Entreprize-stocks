@@ -9,6 +9,10 @@ Interface **en français**, montants en **FCFA**, adaptée au contexte camerouna
 
 ---
 
+## Mise en ligne sur Netlify
+
+La configuration et les parcours en ligne sont décrits dans [le guide de mise en ligne](docs/MISE-EN-LIGNE-NETLIFY.md). Le déploiement utilise une base PostgreSQL neuve, sans importer les comptes et données de démonstration ci-dessous.
+
 ## 1. Démarrage rapide
 
 ```bash
