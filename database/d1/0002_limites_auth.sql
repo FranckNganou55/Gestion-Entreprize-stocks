@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS d1_limites_auth (
+ cle TEXT PRIMARY KEY,
+ periode INTEGER NOT NULL,
+ essais INTEGER NOT NULL DEFAULT 0
+);

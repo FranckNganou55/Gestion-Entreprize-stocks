@@ -16,9 +16,14 @@
     "backup:mysql": "node scripts/sauvegarder-mysql.js",
     "db:init": "node scripts/initialiser-mysql.js",
     "test:production": "node tests/production.js",
-    "test:cloudflare": "node tests/cloudflare.js",
+    "test:cloudflare": "node tests/cloudflare.js && node tests/d1.mjs",
     "cloudflare:check": "wrangler deploy --dry-run",
-    "deploy:cloudflare": "wrangler deploy"
+    "deploy:cloudflare": "wrangler deploy",
+    "test:d1": "node tests/d1.mjs",
+    "test:d1:interface": "node tests/d1-interface.mjs",
+    "export:d1": "node scripts/exporter-d1.js",
+    "dev:cloudflare": "wrangler dev",
+    "db:d1:migrate": "wrangler d1 migrations apply gestion_enterprize --remote"
   },
   "keywords": [
     "gestion",

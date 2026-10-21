@@ -1,2 +1,5 @@
-# URL HTTPS du backend Node.js/MySQL publié, différente de l’URL Cloudflare :
-BACKEND_ORIGIN=https://votre-backend.example
+# Variables privées locales uniquement. Ne pas publier .dev.vars.
+JWT_SECRET=remplacer-par-un-secret-aleatoire-de-plus-de-32-caracteres
+# Installation neuve seulement :
+# OWNER_EMAIL=
+# OWNER_PASSWORD=

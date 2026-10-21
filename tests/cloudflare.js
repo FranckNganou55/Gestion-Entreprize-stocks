@@ -18,6 +18,6 @@ const assert=require('node:assert/strict');
  r=await gererRequete(new Request('https://app.example.test/api/auth/login'),env,async()=>Response.json({erreur:'Identifiants incorrects'},{status:401}));ok('Refus du backend conservé',r.status===401);
  r=await gererRequete(new Request('https://app.example.test/api/ventes'),env,async()=>new Response('<html>SPA</html>',{headers:{'Content-Type':'text/html'}}));ok('Une page HTML ne masque pas une API manquante',r.status===502);
  r=await gererRequete(new Request('https://app.example.test/api/auth/login'),env,async()=>{throw Error('indisponible');});ok('Panne backend explicitement signalée',r.status===503);
- const fichier=require('node:fs').readFileSync('wrangler.jsonc','utf8');const config=JSON.parse(fichier);ok('Wrangler exécute le Worker avant la SPA sur /api',config.assets.run_worker_first.includes('/api/*')&&config.main==='cloudflare/worker.mjs');
+ const fichier=require('node:fs').readFileSync('wrangler.jsonc','utf8');const config=JSON.parse(fichier);ok('Wrangler exécute le Worker avant la SPA sur /api',config.assets.run_worker_first.includes('/api/*')&&config.main==='cloudflare/d1/worker.mjs'&&config.d1_databases[0].binding==='DB');
  console.log(n+'/'+n+' vérifications Cloudflare réussies.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

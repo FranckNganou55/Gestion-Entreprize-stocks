@@ -263,6 +263,7 @@ App.enregistrerVue('plateforme-entreprises', {
             { titre: 'Boutique', rendre: (l) => Fmt.echapper(l.magasin || 'réseau') },
             { titre: 'Dernière connexion', rendre: (l) => Fmt.dateH(l.dernier_login) },
             { titre: 'État', rendre: (l) => l.actif ? '<span class="badge ok">Actif</span>' : '<span class="badge ko">Désactivé</span>' },
+            { titre: 'Accès Cloudflare', rendre: l => l.mot_de_passe_a_adapter ? `<button class="btn petit" data-acces-cloudflare="${l.id}">Définir le mot de passe</button>` : '' },
           ], d.utilisateurs, { vide: 'Aucun compte' })}
 
           <h4 style="margin:16px 0 8px">💳 Paiements d'abonnement</h4>
@@ -291,6 +292,22 @@ App.enregistrerVue('plateforme-entreprises', {
         pied: `<button class="btn" data-fermer>Fermer</button>`,
         surOuverture(mod, fermer) {
           mod.querySelector('[data-fermer]').onclick = fermer;
+          mod.querySelectorAll('[data-acces-cloudflare]').forEach(b => b.onclick = () => {
+            const cible = d.utilisateurs.find(u => String(u.id) === b.dataset.accesCloudflare);
+            ouvrirModale({ titre: 'Accès Cloudflare — ' + cible.nom,
+              contenu: `<p>Définissez le mot de passe que cet utilisateur utilisera sur la version en ligne. Communiquez-le-lui par un canal privé.</p><div class="champ"><label>Nouveau mot de passe</label><input type="password" name="mot_de_passe" minlength="8" autocomplete="new-password"></div>`,
+              pied: '<button class="btn" data-annuler>Annuler</button><button class="btn primaire" data-enregistrer>Enregistrer</button>',
+              surOuverture(dialogue, fermerDialogue) {
+                dialogue.querySelector('[data-annuler]').onclick = fermerDialogue;
+                dialogue.querySelector('[data-enregistrer]').onclick = async () => {
+                  const mot_de_passe = dialogue.querySelector('[name=mot_de_passe]').value;
+                  if(mot_de_passe.length<8)return notifier('Au moins 8 caractères sont requis.','erreur');
+                  try { await Api.post('/plateforme/utilisateurs/' + cible.id + '/mot-de-passe', { mot_de_passe }); notifier('Accès Cloudflare configuré'); fermerDialogue(); fermer(); charger(); }
+                  catch(error){ notifier(error.message,'erreur'); }
+                };
+              }
+            });
+          });
           mod.querySelectorAll('[data-valider]').forEach((b) => b.onclick = async () => {
             try {
               const r = await Api.post('/plateforme/paiements/' + b.dataset.valider + '/valider');

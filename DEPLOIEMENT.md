@@ -1,8 +1,8 @@
 # Inventa GestyPro — GitHub et déploiement
 
-**Node.js 24, MySQL 8, base `gestion_enterprize`.** Le backend sert aussi l’interface web. GitHub héberge le code ; GitHub Pages seul ne peut pas exécuter cette application. Choisir un service Node.js ou Docker et un MySQL persistant.
+Le déploiement Cloudflare par défaut utilise **Workers + D1**, avec l’interface et l’API sur le même domaine. Il ne dépend pas du PC WampServer. Voir [CLOUDFLARE.md](CLOUDFLARE.md) pour les commandes, la migration et la conservation des accès.
 
-Le fichier `wrangler.jsonc` publie l’interface et un Worker Cloudflare gratuit qui relaie `/api` vers un backend HTTPS Node.js/MySQL séparé. Voir [CLOUDFLARE.md](CLOUDFLARE.md) pour configurer BACKEND_ORIGIN. Le backend lui-même doit être hébergé suivant les étapes ci-dessous, ou rester sur votre PC derrière un tunnel. L’exécution du backend directement chez Cloudflare avec Containers nécessite un forfait Workers payant.
+La version locale Node.js/MySQL reste disponible sur le port 3001. Les étapes suivantes décrivent cet autre mode d’hébergement, si vous souhaitez utiliser MySQL sur un serveur Node.js ou Docker.
 
 ## Retrouver vos entreprises et le propriétaire en ligne
 
