@@ -3,3 +3,14 @@ data/*.db-wal
 data/*.db-shm
 sauvegardes/
 *.log
+data/database.json
+data/mysql-*.json
+data/
+.env
+.env.*
+!.env.example
+*.sql
+!database/schema.sql
+docs/*.png
+docs/
+.npm-cache/

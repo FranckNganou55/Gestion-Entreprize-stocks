@@ -27,7 +27,7 @@ async function login(email, mot_de_passe) {
 const H = (t) => ({ Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' });
 
 async function principal() {
-  const owner = await login('franck06.nganou02oumbe2004@gmail.com', 'Aspirine46@!');
+  const owner = await login('franck06.nganou02oumbe2004@gmail.com', (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026'));
   const admin = await login('admin@shoppingplus.cm', 'Admin@2026');
   const caisse = await login('caisse1@shoppingplus.cm', 'Caisse@2026');
   verif('Connexions (propriétaire, admin, caissière)', !!(owner && admin && caisse));

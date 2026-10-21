@@ -5,7 +5,7 @@ async function api(token,path,method='GET',body){const r=await fetch(BASE+'/api'
 async function login(email,password){const r=await api(null,'/auth/login','POST',{email,mot_de_passe:password});assert.equal(r.status,200);return r.data;}
 const pause=ms=>new Promise(r=>setTimeout(r,ms));async function jusqua(f){for(let i=0;i<100;i++){if(f())return;await pause(60)}throw Error('Attente interface expirée');}
 (async()=>{
-const owner=await login('franck06.nganou02oumbe2004@gmail.com','Aspirine46@!');const admin=await login('admin@shoppingplus.cm','Admin@2026');
+const owner=await login('franck06.nganou02oumbe2004@gmail.com',(process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026'));const admin=await login('admin@shoppingplus.cm','Admin@2026');
 const sauvegarde=db.prepare("SELECT * FROM parametres WHERE entreprise_id=0 AND (cle LIKE 'smtp_%' OR cle IN ('mail_from','app_url'))").all();const ownerVerif=db.prepare('SELECT email_verifie FROM users WHERE id=?').get(owner.utilisateur.id).email_verifie;
 let dom;
 try{

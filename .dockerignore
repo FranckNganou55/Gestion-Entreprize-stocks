@@ -1,0 +1,11 @@
+node_modules
+data
+.git
+.env
+.env.*
+.npm-cache
+docs
+tests
+*.log
+*.sql
+!database/schema.sql

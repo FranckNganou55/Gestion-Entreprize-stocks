@@ -11,7 +11,11 @@
     "test:exigences": "node tests/exigences.js",
     "test:verification-proprietaire": "node tests/verification-proprietaire.js",
     "test:paiements": "node tests/paiements-securises.js",
-    "test:caisse": "node tests/caisse-promotions.js"
+    "test:caisse": "node tests/caisse-promotions.js",
+    "test:mysql": "node tests/mysql-integration.js",
+    "backup:mysql": "node scripts/sauvegarder-mysql.js",
+    "db:init": "node scripts/initialiser-mysql.js",
+    "test:production": "node tests/production.js"
   },
   "keywords": [
     "gestion",
@@ -28,9 +32,13 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.24.6",
     "nodemailer": "^10.0.14"
   },
   "devDependencies": {
     "jsdom": "^26.1.0"
+  },
+  "engines": {
+    "node": ">=22.16.0"
   }
 }

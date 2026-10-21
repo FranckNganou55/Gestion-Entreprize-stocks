@@ -30,7 +30,7 @@ const H = (t) => ({ Authorization: 'Bearer ' + t, 'Content-Type': 'application/j
 const CODES = ['orange_money', 'mtn_momo', 'mastercard'];
 
 async function principal() {
-  const owner = await login('franck06.nganou02oumbe2004@gmail.com', 'Aspirine46@!');
+  const owner = await login('franck06.nganou02oumbe2004@gmail.com', (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026'));
   const admin = await login('admin@shoppingplus.cm', 'Admin@2026');
   verif('Connexions (propriétaire, administrateur)', !!(owner && admin));
 

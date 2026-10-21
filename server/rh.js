@@ -12,7 +12,7 @@ const { db } = require('./db');
 const { param } = require('./utils');
 
 /* Les PDF téléversés sont écrits sur disque : trop lourds pour la base. */
-const DOSSIER_DOCUMENTS = path.join(__dirname, '..', 'data', 'documents');
+const DOSSIER_DOCUMENTS = process.env.DOCUMENTS_DIR ? path.resolve(process.env.DOCUMENTS_DIR) : path.join(__dirname, '..', 'data', 'documents');
 
 const TAILLE_MAX_OCTETS = 10 * 1024 * 1024;   // 10 Mo par document
 

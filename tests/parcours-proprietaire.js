@@ -102,7 +102,7 @@ function verif(libelle, ok, detail) {
 
   /* --- 3. Le compte propriétaire monitore tout --- */
   const loginProp = await req('POST', '/api/auth/login', { corps: {
-    email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: 'Aspirine46@!',
+    email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026'),
   } });
   verif('Connexion du compte propriétaire (franck06.nganou02oumbe2004@gmail.com)', loginProp.json && !!loginProp.json.token);
   const tokenProp = loginProp.json.token;

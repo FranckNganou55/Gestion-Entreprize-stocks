@@ -42,7 +42,7 @@ async function boot(email, mdp, erreurs) {
 async function principal() {
   /* ---------------- Propriétaire ---------------- */
   const errsO = [];
-  const o = await boot('franck06.nganou02oumbe2004@gmail.com', 'Aspirine46@!', errsO);
+  const o = await boot('franck06.nganou02oumbe2004@gmail.com', (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026'), errsO);
   const menus = [...o.document.querySelectorAll('nav a')].map((a) => a.dataset.vue);
   log('Menu propriétaire : page Ventes présente', menus.includes('plateforme-ventes'), menus.join(', '));
   log('Menu propriétaire : page Classement présente', menus.includes('plateforme-classement'));

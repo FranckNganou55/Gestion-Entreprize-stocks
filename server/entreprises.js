@@ -16,25 +16,21 @@ const RH = require('./rh');
 /* Compte du propriétaire de la plateforme                             */
 /* ------------------------------------------------------------------ */
 const PROPRIETAIRE = {
-  email: 'franck06.nganou02oumbe2004@gmail.com',
-  mot_de_passe: 'Aspirine46@!',
-  nom: 'Nganou Oumbe Franck',
-  telephone: '654324282',
+  email: process.env.OWNER_EMAIL || '',
+  mot_de_passe: process.env.OWNER_PASSWORD || '',
+  nom: process.env.OWNER_NAME || 'Propriétaire',
+  telephone: process.env.OWNER_PHONE || '',
 };
 
 /** Crée (ou répare) le compte propriétaire : accès total à la plateforme. */
 function assurerProprietaire() {
+  const proprietaire=db.prepare("SELECT * FROM users WHERE role='super_admin' AND entreprise_id IS NULL ORDER BY id LIMIT 1").get();
+  if(proprietaire)return proprietaire;
+  if(!PROPRIETAIRE.email || PROPRIETAIRE.mot_de_passe.length<12)throw Error('Premier démarrage : définir OWNER_EMAIL et OWNER_PASSWORD (12 caractères minimum), ou importer votre sauvegarde MySQL.');
   const email = PROPRIETAIRE.email.toLowerCase();
   const existe = db.prepare('SELECT * FROM users WHERE email=?').get(email);
   if (existe) {
-    let change = false;
-    if (existe.role !== 'super_admin' || existe.entreprise_id !== null || !existe.actif) {
-      db.prepare("UPDATE users SET role='super_admin', entreprise_id=NULL, actif=1 WHERE id=?").run(existe.id);
-      change = true;
-    }
-    // Le mot de passe choisi par le propriétaire doit survivre au redémarrage.
-    if (change) console.log('  ↳ Compte propriétaire vérifié : ' + email);
-    return db.prepare('SELECT * FROM users WHERE id=?').get(existe.id);
+    throw Error('OWNER_EMAIL correspond à un compte entreprise existant : choisir une autre adresse.');
   }
   const info = db.prepare(`INSERT INTO users (entreprise_id, nom, email, mot_de_passe, role, actif)
     VALUES (NULL, ?, ?, ?, 'super_admin', 1)`)

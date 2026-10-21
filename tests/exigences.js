@@ -14,7 +14,7 @@ async function api(token, route, method = 'GET', body) {
 }
 async function login(email,password) { const r=await api(null,'/auth/login','POST',{email,mot_de_passe:password});assert.equal(r.status,200);return r.data.token; }
 (async()=>{
- const admin=await login('admin@shoppingplus.cm','Admin@2026'), owner=await login('franck06.nganou02oumbe2004@gmail.com','Aspirine46@!'), caisse=await login('caisse1@shoppingplus.cm','Caisse@2026');
+ const admin=await login('admin@shoppingplus.cm','Admin@2026'), owner=await login('franck06.nganou02oumbe2004@gmail.com',(process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026')), caisse=await login('caisse1@shoppingplus.cm','Caisse@2026');
  const ab = db.prepare('SELECT * FROM abonnements WHERE entreprise_id=1 ORDER BY id DESC LIMIT 1').get();
  const ancienAcces = db.prepare("SELECT valeur FROM parametres WHERE entreprise_id=1 AND cle='acces_sans_abonnement'").get();
  let pid, bid;

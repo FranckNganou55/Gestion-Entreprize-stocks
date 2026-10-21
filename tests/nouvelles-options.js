@@ -17,7 +17,7 @@ const http = require('http');
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000';
 const TS = Date.now();
-const PROPRIETAIRE = { email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: 'Aspirine46@!' };
+const PROPRIETAIRE = { email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026') };
 const COMPTE_AFRILAND = '10005-00002-10360711051-43';
 
 const erreurs = [];

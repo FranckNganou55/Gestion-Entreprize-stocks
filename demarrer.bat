@@ -14,10 +14,12 @@ if not exist node_modules (
   call npm install
 )
 
-echo Demarrage de Inventa GestyPro sur http://localhost:3000 ...
-echo Compte proprietaire (monitoring de toutes les entreprises) :
-echo    franck06.nganou02oumbe2004@gmail.com / Aspirine46@!
-echo Entreprise de demonstration : admin@shoppingplus.cm / Admin@2026
+set "PORT=3001"
+set "HOST=127.0.0.1"
+set "DB_CLIENT=mysql"
+set "SP_DB="
+echo Demarrage de Inventa GestyPro sur http://localhost:3001 ...
+echo Gardez cette fenetre ouverte pendant l'utilisation de l'application.
 echo Une autre entreprise ? Bouton "Creer mon entreprise" sur l'ecran d'accueil.
 call npm start
 pause

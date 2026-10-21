@@ -5,6 +5,7 @@
  * Démarrage :  npm start        (port 3000 par défaut)
  * Réinitialiser les données de démonstration : npm run seed
  */
+require('./configuration').verifierProduction();
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -22,6 +23,9 @@ const HOST = process.env.HOST || '0.0.0.0';
 
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
+app.disable('x-powered-by');
+if(process.env.TRUST_PROXY)app.set('trust proxy',process.env.TRUST_PROXY==='1'?1:process.env.TRUST_PROXY);
+app.get('/healthz',(req,res)=>{try{db.prepare('SELECT 1 ok').get();res.json({ok:true});}catch{res.status(503).json({ok:false});}});
 
 /* --- Rôles & permissions (synchronisés à chaque démarrage) --- */
 synchroniserRoles();
@@ -37,7 +41,7 @@ Evenements.installer();
 Mails.installer();
 
 /* --- Première initialisation : données de démonstration --- */
-const cree = seedDatabase();
+const cree = process.env.NODE_ENV !== 'production' && process.env.SEED_DEMO === 'true' ? seedDatabase() : false;
 if (cree) console.log('  ↳ Données de démonstration créées (entreprise, 5 magasins, produits, 120 jours de ventes).');
 
 // L'alerte est également envoyée si aucun utilisateur n'ouvre une page métier.
@@ -49,10 +53,12 @@ setInterval(verifierExpirations, 60000).unref();
 
 /* --- API : état du service (publique) --- */
 app.get('/api/sante', (req, res) => {
+  if(process.env.NODE_ENV==='production')return res.json({ok:true,application:'Inventa GestyPro',stockage:{moteur:db.moteur||'sqlite'}});
   res.json({
     ok: true,
     application: 'Inventa GestyPro',
     version: '1.0.0',
+    stockage: { moteur: db.moteur || 'sqlite' },
     base: {
       magasins: db.prepare('SELECT COUNT(*) c FROM magasins').get().c,
       produits: db.prepare('SELECT COUNT(*) c FROM produits').get().c,
@@ -123,7 +129,7 @@ app.use((err, req, res, next) => {
     return res.status(400).json({ erreur: 'Cet enregistrement existe déjà (code ou email en doublon).' });
   }
   if (statut) return res.status(statut).json({ erreur: msg });
-  res.status(500).json({ erreur: 'Erreur serveur : ' + err.message });
+  res.status(500).json({ erreur: process.env.NODE_ENV==='production' ? 'Erreur serveur. Réessayez ou contactez l’assistance.' : 'Erreur serveur : ' + err.message });
 });
 
 /* --- Arrêt propre : on regroupe tout dans le fichier .db (mode WAL) --- */
@@ -131,7 +137,7 @@ function arreter(signal) {
   try {
     db.pragma('wal_checkpoint(TRUNCATE)');
     db.close();
-    console.log(`\n  Arrêt propre du serveur (${signal}) — base consolidée dans data/shopmanager.db`);
+    console.log(`\n  Arrêt propre du serveur (${signal}) — connexion de base fermée`);
   } catch (e) { /* rien */ }
   process.exit(0);
 }
@@ -150,14 +156,6 @@ app.listen(PORT, HOST, () => {
   console.log('   Assistance WhatsApp : 654324282');
   console.log('');
   console.log('   PROPRIÉTAIRE DE LA PLATEFORME (monitoring de toutes les entreprises) :');
-  console.log('   • ' + Entreprises.PROPRIETAIRE.email + '  /  ' + Entreprises.PROPRIETAIRE.mot_de_passe);
-  console.log('');
-  console.log('   Comptes de démonstration d\'une entreprise cliente :');
-  console.log('   • Administrateur général ....... admin@shoppingplus.cm        / Admin@2026');
-  console.log('   • Gestionnaire réseau .......... gestion@shoppingplus.cm      / Gest@2026');
-  console.log('   • Responsable boutique Akwa .... chef.akwa@shoppingplus.cm    / Chef@2026');
-  console.log('   • Caissière Bastos ............. caisse1@shoppingplus.cm      / Caisse@2026');
-  console.log('   • Agent de stock Bafoussam ..... stock@shoppingplus.cm        / Stock@2026');
-  console.log('   • Agent de réception Mvog-Mbi .. reception.mvogmbi@shoppingplus.cm / Reception@2026');
+  console.log('   • Compte propriétaire conservé en base ; connexion avec votre mot de passe actuel.');
   console.log('');
 });

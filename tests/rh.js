@@ -400,7 +400,7 @@ async function principal() {
     await req('/api/rh/candidats', { methode: 'POST', jeton: jetonP, corps: { nom: 'Candidat Purge ' + TS, poste_vise: 'Vendeur' } });
 
     const prop = await req('/api/auth/login', {
-      methode: 'POST', corps: { email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: 'Aspirine46@!' },
+      methode: 'POST', corps: { email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026') },
     });
     const supEnt = await req('/api/plateforme/entreprises/' + idEntPurge, { methode: 'DELETE', jeton: prop.donnees.token });
     verif('Le propriétaire peut supprimer une entreprise cliente', supEnt.statut === 200, 'HTTP ' + supEnt.statut);

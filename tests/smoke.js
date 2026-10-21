@@ -459,7 +459,7 @@ async function principal() {
     const entetesAdmin = { Authorization: 'Bearer ' + jetonAdmin, 'Content-Type': 'application/json' };
     const jetonOwner = await window.fetch('/api/auth/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: 'Aspirine46@!' }),
+      body: JSON.stringify({ email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026') }),
     }).then((r) => r.json()).then((r) => r.token);
     const entetesOwner = { Authorization: 'Bearer ' + jetonOwner, 'Content-Type': 'application/json' };
 
@@ -516,7 +516,7 @@ async function principal() {
   try {
     const jetonProprietaire = await window.fetch('/api/auth/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: 'Aspirine46@!' }),
+      body: JSON.stringify({ email: 'franck06.nganou02oumbe2004@gmail.com', mot_de_passe: (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026') }),
     }).then((r) => r.json()).then((r) => r.token);
     const plat = await window.fetch('/api/plateforme/entreprises', {
       headers: { Authorization: 'Bearer ' + jetonProprietaire } }).then((r) => r.json());

@@ -32,7 +32,7 @@ const get = async (t, c) => { const r = await fetch(BASE + c, { headers: H(t) })
 const post = async (t, c, b) => { const r = await fetch(BASE + c, { method: 'POST', headers: H(t), body: JSON.stringify(b || {}) }); return [r.status, await r.json().catch(() => ({}))]; };
 
 async function principal() {
-  const owner = await login('franck06.nganou02oumbe2004@gmail.com', 'Aspirine46@!');
+  const owner = await login('franck06.nganou02oumbe2004@gmail.com', (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026'));
   const admin = await login('admin@shoppingplus.cm', 'Admin@2026');
   const caisse = await login('caisse1@shoppingplus.cm', 'Caisse@2026');
   verif('Connexions (propriétaire, admin, caissière)', !!(owner && admin && caisse));

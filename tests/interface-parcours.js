@@ -174,7 +174,7 @@ async function principal() {
   await attendreCondition(() => w2.App && w2.document.querySelector('#form-connexion'), { message: 'écran de connexion absent (2)' });
   const fc = w2.document.getElementById('form-connexion');
   fc.querySelector('[name=email]').value = 'franck06.nganou02oumbe2004@gmail.com';
-  fc.querySelector('[name=mot_de_passe]').value = 'Aspirine46@!';
+  fc.querySelector('[name=mot_de_passe]').value = (process.env.TEST_OWNER_PASSWORD || 'Proprietaire-test-uniquement-2026');
   fc.dispatchEvent(new w2.Event('submit', { bubbles: true, cancelable: true }));
   await attendreCondition(() => w2.document.querySelector('nav a'), { message: 'connexion propriétaire' });
 

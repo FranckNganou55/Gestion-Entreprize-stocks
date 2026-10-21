@@ -1,0 +1,26 @@
+name: Vérification production
+on: [push, pull_request]
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: test-ci-mysql-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest-ci-mysql-only"
+          --health-interval=10s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run test:production
+        env:
+          TEST_MYSQL_ROOT_PASSWORD: test-ci-mysql-only
+      - run: docker build -t gestion-enterprize:test .
