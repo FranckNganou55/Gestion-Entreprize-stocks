@@ -20,6 +20,8 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - run: npm run test:cloudflare
+      - run: npm run cloudflare:check
       - run: npm run test:production
         env:
           TEST_MYSQL_ROOT_PASSWORD: test-ci-mysql-only

@@ -13,4 +13,8 @@ data/
 !database/schema.sql
 docs/*.png
 docs/
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 .npm-cache/

@@ -3,6 +3,8 @@ data
 .git
 .env
 .env.*
+.dev.vars*
+.wrangler
 .npm-cache
 docs
 tests

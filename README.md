@@ -2,7 +2,7 @@
 
 **Node.js 24, MySQL 8, base `gestion_enterprize`.** Le backend sert aussi l’interface web. GitHub héberge le code ; GitHub Pages seul ne peut pas exécuter cette application. Choisir un service Node.js ou Docker et un MySQL persistant.
 
-Le fichier `wrangler.jsonc` présent dans le dépôt publie uniquement l’interface statique sur Cloudflare. Cette configuration seule ne lance ni le backend Express ni MySQL ; elle ne suffit donc pas pour se connecter. Pour l’application complète, utiliser le déploiement Node.js ou Docker décrit ci-dessous.
+Le fichier `wrangler.jsonc` publie l’interface et un Worker Cloudflare gratuit qui relaie `/api` vers un backend HTTPS Node.js/MySQL séparé. Voir [CLOUDFLARE.md](CLOUDFLARE.md) pour configurer BACKEND_ORIGIN. Le backend lui-même doit être hébergé suivant les étapes ci-dessous, ou rester sur votre PC derrière un tunnel. L’exécution du backend directement chez Cloudflare avec Containers nécessite un forfait Workers payant.
 
 ## Retrouver vos entreprises et le propriétaire en ligne
 

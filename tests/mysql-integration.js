@@ -21,6 +21,13 @@ let n=0;function ok(label,v){assert.ok(v,label);n++;console.log('OK '+label);}
   async function api(route,method,body,token){const r=await fetch(base+'/api'+route,{method:method||'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:body===undefined?undefined:JSON.stringify(body)});const texte=await r.text();let data;try{data=JSON.parse(texte);}catch{data=texte;}return{status:r.status,data};}
   let r=await api('/sante');ok('Backend réellement connecté à MySQL',r.data.stockage.moteur==='mysql'&&r.data.base.ventes>0);
   r=await api('/auth/login','POST',{email:'admin@shoppingplus.cm',mot_de_passe:'Admin@2026'});ok('Connexion administrateur après migration',r.status===200);const admin=r.data.token,ent=r.data.utilisateur.entreprise_id;
+  const {gererRequete}=await import('../cloudflare/worker.mjs');
+  const cfEnv={BACKEND_ORIGIN:'https://backend.example.test'};
+  const pont=requete=>{const u=new URL(requete.url);const locale=new URL(base);u.protocol=locale.protocol;u.host=locale.host;return fetch(new Request(u,requete));};
+  const cfLogin=await gererRequete(new Request('https://application.example.test/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:'admin@shoppingplus.cm',mot_de_passe:'Admin@2026'})}),cfEnv,pont);
+  const cfSession=await cfLogin.json();ok('Liaison Cloudflare : connexion réelle au backend MySQL',cfLogin.status===200&&!!cfSession.token);
+  const cfProfil=await gererRequete(new Request('https://application.example.test/api/auth/me',{headers:{Authorization:'Bearer '+cfSession.token}}),cfEnv,pont);
+  ok('Liaison Cloudflare : session authentifiée utilisable',cfProfil.status===200&&(await cfProfil.json()).utilisateur.entreprise_id===ent);
   const [[owner]]=await c.query("SELECT id,email,role,magasin_id,nom,entreprise_id FROM users WHERE role='super_admin' LIMIT 1");const tokenOwner=jwt.sign(owner,secret,{expiresIn:'10m'});
   for(const route of ['/auth/me','/plateforme/resume','/plateforme/entreprises','/plateforme/entreprises/'+ent,'/plateforme/parametres','/plateforme/paiements','/plateforme/classement','/plateforme/formules','/plateforme/mails']){
    r=await api(route,null,undefined,tokenOwner);ok('Propriétaire : '+route,r.status===200||(console.error(r.data),false));

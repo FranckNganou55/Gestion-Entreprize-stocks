@@ -15,7 +15,10 @@
     "test:mysql": "node tests/mysql-integration.js",
     "backup:mysql": "node scripts/sauvegarder-mysql.js",
     "db:init": "node scripts/initialiser-mysql.js",
-    "test:production": "node tests/production.js"
+    "test:production": "node tests/production.js",
+    "test:cloudflare": "node tests/cloudflare.js",
+    "cloudflare:check": "wrangler deploy --dry-run",
+    "deploy:cloudflare": "wrangler deploy"
   },
   "keywords": [
     "gestion",
@@ -36,7 +39,8 @@
     "nodemailer": "^10.0.14"
   },
   "devDependencies": {
-    "jsdom": "^26.1.0"
+    "jsdom": "^26.1.0",
+    "wrangler": "^4.151.3"
   },
   "engines": {
     "node": ">=22.16.0"

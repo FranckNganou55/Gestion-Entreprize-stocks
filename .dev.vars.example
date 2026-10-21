@@ -1,0 +1,2 @@
+# URL HTTPS du backend Node.js/MySQL publié, différente de l’URL Cloudflare :
+BACKEND_ORIGIN=https://votre-backend.example

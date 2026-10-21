@@ -1,12 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "gestion-entreprize-stocks",
+  "main": "cloudflare/worker.mjs",
   "compatibility_date": "2026-10-19",
   "observability": {
     "enabled": true
   },
   "assets": {
+    "binding": "ASSETS",
     "directory": "public",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api", "/api/*", "/healthz"]
   }
 }
