@@ -46,12 +46,12 @@ export async function routesCatalogue(c){
   if(!permission(u,'prix.consulter'))rows.forEach(r=>{delete r.prix_achat;delete r.prix_vente;});return rows;
  }
  if(['/stocks/mouvement','/stocks/ajustement','/stocks/reception'].includes(p)&&m==='POST'){
-  const ajustement=p.endsWith('/ajustement'),type=ajustement?'ajustement':b.type||'entree';exiger(['entree','sortie','ajustement'].includes(type),'Type de mouvement invalide.');autoriser(u,ajustement?'stock.ajuster':type==='sortie'?'stock.sortie':'stock.entree');const mid=u.portee==='magasin'?u.magasin_id:Number(b.magasin_id),reference='STK-'+uid();
+  if(p.endsWith('/ajustement')&&b.quantite_reelle!==undefined)b.quantite=b.quantite_reelle;const ajustement=p.endsWith('/ajustement'),type=ajustement?'ajustement':b.type||'entree';exiger(['entree','sortie','ajustement'].includes(type),'Type de mouvement invalide.');autoriser(u,ajustement?'stock.ajuster':type==='sortie'?'stock.sortie':'stock.entree');const mid=u.portee==='magasin'?u.magasin_id:Number(b.magasin_id),reference='STK-'+uid();
   let lignes=(Array.isArray(b.lignes)?b.lignes:[b]).map(l=>({...l,produit_id:Number(l.produit_id),quantite:type==='sortie'?-Math.abs(Number(l.quantite)):Number(l.quantite)}));
   if(ajustement){const stocks=await db.all('SELECT produit_id,quantite FROM stocks WHERE magasin_id=?',mid);lignes=lignes.map(l=>{exiger(Number.isFinite(l.quantite)&&l.quantite>=0,'Stock cible invalide.');return{...l,quantite:l.quantite-(stocks.find(s=>s.produit_id===l.produit_id)?.quantite||0)};}).filter(l=>l.quantite!==0);}
   if(!lignes.length)return{ok:true,reference};if(type==='entree')exiger(lignes.every(l=>l.quantite>0),'Une entrée doit être positive.');
   const queries=await mouvementsLot(db,u,mid,lignes,{type,reference,motif:b.motif||''});
-  await db.batch(queries);return{ok:true,reference};
+  await db.batch(queries);return{ok:true,reference,nb_lignes:lignes.length,quantite_totale:lignes.reduce((s,l)=>s+l.quantite,0)};
  }
  if(p==='/transferts'&&m==='GET'){autoriser(u,'transferts.consulter');return db.all(`SELECT t.*,p.nom produit,s.nom source,d.nom destination FROM transferts t JOIN produits p ON p.id=t.produit_id JOIN magasins s ON s.id=t.magasin_source_id JOIN magasins d ON d.id=t.magasin_dest_id WHERE s.entreprise_id=? ${u.portee==='magasin'?'AND (s.id=? OR d.id=?)':''} ORDER BY t.id DESC LIMIT 200`,e,...(u.portee==='magasin'?[u.magasin_id,u.magasin_id]:[]));}
  if(p==='/transferts'&&m==='POST'){

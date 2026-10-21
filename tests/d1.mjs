@@ -42,6 +42,7 @@ try{
  avantLot=()=>sqlite.prepare('UPDATE stocks SET quantite=quantite-1 WHERE produit_id=1 AND magasin_id=?').run(mid);
  const conflit=await call('/api/ventes','POST',{magasin_id:mid,lignes:[{produit_id:1,quantite:1}],montant_paye:100},admin);assert.equal(conflit.status,409);assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM ventes').get().n,ventesAvant);
  const dotation=await call('/api/magasins','POST',{code:'BQ-2',nom:'Deuxième boutique',type:'boutique',magasin_source_id:mid,stock:Array.from({length:150},(_,i)=>({produit_id:i+1,quantite:1}))},admin);assert.equal(dotation.status,201,JSON.stringify(dotation.data));assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM stocks WHERE magasin_id=?').get(dotation.data.id).n,150);
+ const stockAjuste=await call('/api/stocks/ajustement','POST',{produit_id:1,magasin_id:mid,quantite_reelle:20,motif:'Comptage'},admin);assert.equal(stockAjuste.status,201,JSON.stringify(stockAjuste.data));assert.equal(sqlite.prepare('SELECT quantite FROM stocks WHERE produit_id=1 AND magasin_id=?').get(mid).quantite,20);
  const autre=await call('/api/entreprises/inscription','POST',{nom:'Autre entreprise',email:'autre@example.test',mot_de_passe:'Test-Autre-2026!'});assert.equal(autre.status,201);sqlite.prepare('UPDATE users SET email_verifie=1 WHERE email=?').run('autre@example.test');
  assert.equal((await call('/api/produits/1','GET',null,autre.data.token)).status,404);
  assert.equal((await call('/api/inventaires/'+idinv,'GET',null,autre.data.token)).status,404);
