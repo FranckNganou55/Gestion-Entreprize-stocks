@@ -178,9 +178,9 @@ const App = {
             <p class="sous">Accédez à la gestion de votre réseau de magasins.</p>
             <form id="form-connexion">
               <div class="champ"><label>Adresse email</label>
-                <input type="email" name="email" value="admin@shoppingplus.cm" required autocomplete="username"></div>
+                <input type="email" name="email" required autocomplete="username"></div>
               <div class="champ"><label>Mot de passe</label>
-                <input type="password" name="mot_de_passe" value="Admin@2026" required autocomplete="current-password"></div>
+                <input type="password" name="mot_de_passe" required autocomplete="current-password"></div>
               <button class="btn primaire btn-bloc" type="submit" style="padding:11px">Se connecter</button>
               <div class="aide" id="erreur-connexion" style="color:#b91c1c;margin-top:10px"></div>
             </form>
@@ -190,20 +190,7 @@ const App = {
               <a class="btn btn-bloc" id="btn-aide-connexion" style="padding:10px;margin-top:8px"
                  href="https://wa.me/237654324282" target="_blank" rel="noopener">💬 Aide WhatsApp 654 32 42 82</a>
             </div>
-            <div class="comptes-demo">
-              <p>Comptes de démonstration (cliquez pour remplir) :</p>
-              ${[
-                ['Administrateur — accès total', 'admin@shoppingplus.cm', 'Admin@2026'],
-                ['Gestionnaire réseau', 'gestion@shoppingplus.cm', 'Gest@2026'],
-                ['Responsable boutique Akwa (crée ses comptes)', 'chef.akwa@shoppingplus.cm', 'Chef@2026'],
-                ['Caissière Bastos — ventes journalières', 'caisse1@shoppingplus.cm', 'Caisse@2026'],
-                ['Agent de stock Bafoussam — entrées/sorties', 'stock@shoppingplus.cm', 'Stock@2026'],
-                ['Agent de réception Mvog-Mbi — entrées uniquement', 'reception.mvogmbi@shoppingplus.cm', 'Reception@2026'],
-              ].map(([lib, e, m]) => `
-                <button type="button" class="compte" data-email="${e}" data-mdp="${m}">
-                  <b>${lib}</b><code>${m}</code>
-                </button>`).join('')}
-            </div>
+
           </div>
         </div>
       </div>`;
@@ -212,14 +199,6 @@ const App = {
     if (bInscription) bInscription.onclick = () => this.afficherInscription();
     const bAide = document.getElementById('btn-aide-connexion');
     if (bAide) bAide.href = this.lienAide();
-
-    document.querySelectorAll('.compte').forEach((b) => {
-      b.onclick = () => {
-        document.querySelector('[name=email]').value = b.dataset.email;
-        document.querySelector('[name=mot_de_passe]').value = b.dataset.mdp;
-        document.getElementById('form-connexion').requestSubmit();
-      };
-    });
 
     document.getElementById('form-connexion').onsubmit = async (e) => {
       e.preventDefault();

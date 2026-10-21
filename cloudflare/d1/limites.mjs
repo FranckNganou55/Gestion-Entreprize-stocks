@@ -1,4 +1,11 @@
 import {exiger} from './db.mjs';
+export async function limiterConnexion(env,email){
+ exiger(env.LOGIN_LIMITER,'La protection de connexion doit être configurée.',503);
+ const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(email).trim().toLowerCase()));
+ const key=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+ const {success}=await env.LOGIN_LIMITER.limit({key});
+ exiger(success,'Trop de tentatives pour ce compte. Patientez une minute.',429);
+}
 export async function limiter(db,request,action,max=12,duree=60000){
  const source=request.headers.get('CF-Connecting-IP')||'local';
  const empreinte=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(action+':'+source));

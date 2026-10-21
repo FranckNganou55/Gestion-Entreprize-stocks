@@ -1,9 +1,37 @@
 {
- "$schema":"node_modules/wrangler/config-schema.json",
- "name":"gestion-entreprize-stocks",
- "main":"cloudflare/d1/worker.mjs",
- "compatibility_date":"2026-10-19",
- "compatibility_flags":["nodejs_compat"],
- "assets":{"binding":"ASSETS","directory":"public","not_found_handling":"single-page-application","run_worker_first":["/api","/api/*","/healthz"]},
- "d1_databases":[{"binding":"DB","database_name":"gestion_enterprize","database_id":"3c5dbe06-1b27-41dd-b515-94d3eb62422a","migrations_dir":"database/d1"}]
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gestion-entreprize-stocks",
+  "main": "cloudflare/d1/worker.mjs",
+  "compatibility_date": "2026-10-19",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "public",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": [
+      "/api",
+      "/api/*",
+      "/healthz"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gestion_enterprize",
+      "database_id": "3c5dbe06-1b27-41dd-b515-94d3eb62422a",
+      "migrations_dir": "database/d1"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "LOGIN_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 12,
+        "period": 60
+      }
+    }
+  ]
 }

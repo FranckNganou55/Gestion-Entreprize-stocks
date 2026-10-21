@@ -1,4 +1,4 @@
-import {limiter} from './limites.mjs';
+import {limiter,limiterConnexion} from './limites.mjs';
 import {routesDevises} from './devises.mjs';
 import {routesRH} from './rh.mjs';
 import {routesMails,envoyerVerification} from './mails.mjs';
@@ -15,8 +15,14 @@ import {routesMessages} from './messages.mjs';
 import {routesPlateforme} from './plateforme.mjs';
 import {routesRapports} from './rapports.mjs';
 export async function traiterApi(request,env,ctx){
- try{return await avecIdentifiants(env.DB,()=>traiterRequete(request,env,ctx),!['GET','HEAD'].includes(request.method));}
- catch(e){return json({erreur:e.status?e.message:'La base D1 doit être configurée et ses migrations appliquées.'},e.status||503);}
+ const chemin=new URL(request.url).pathname.replace(/\/+$/,'');
+ try{return await avecIdentifiants(env.DB,()=>traiterRequete(request,env,ctx),!['GET','HEAD'].includes(request.method)&&chemin!=='/api/auth/login');}
+ catch(e){console.error('D1_INIT',e.message);return erreurQuota(e)||json({erreur:e.status?e.message:'Le stockage est temporairement indisponible. Réessayez dans quelques instants.',code:'D1_INDISPONIBLE'},e.status||503);}
+}
+function erreurQuota(e){
+ if(!/exceeded.*daily row (write|read) limit/i.test(e.message||''))return null;
+ const ecriture=/daily row write limit/i.test(e.message),reprise=new Date();reprise.setUTCHours(24,0,0,0);
+ return json({erreur:'Le quota quotidien gratuit '+(ecriture?'d’écriture':'de lecture')+' Cloudflare est atteint. Il se réinitialise à 1 h du matin, heure locale. Aucun abonnement payant n’a été activé.',code:ecriture?'D1_QUOTA_ECRITURE':'D1_QUOTA_LECTURE',reprise_at:reprise.toISOString()},503);
 }
 async function traiterRequete(request,env,ctx){
  try{
@@ -29,11 +35,11 @@ async function traiterRequete(request,env,ctx){
   if(p==='/entreprises/etat')return json({tarifs:await tarifs(db),support:{},services:{},nb_entreprises:(await db.get('SELECT COUNT(*) n FROM entreprises')).n});
   if(['/auth/email-disponible','/entreprises/email-disponible'].includes(p))return json({email:url.searchParams.get('email'),disponible:!await db.get('SELECT id FROM users WHERE email=?',String(url.searchParams.get('email')||'').trim().toLowerCase())});
   if(p==='/auth/login'&&m==='POST'){
-   await limiter(db,request,'login');
    const email=String(b.email||'').trim().toLowerCase();exiger(email&&typeof b.mot_de_passe==='string','Email et mot de passe obligatoires.');
+   await limiterConnexion(env,email);
    const u=await db.get('SELECT * FROM users WHERE email=?',email);exiger(u&&u.actif,'Identifiants incorrects.',401);
    exiger(await verifierMotDePasse(b.mot_de_passe,u.mot_de_passe),'Identifiants incorrects.',401);
-   const token=await signer(u,env.JWT_SECRET);await db.run("UPDATE users SET dernier_login=datetime('now','localtime') WHERE id=?",u.id);return json({token,utilisateur:await profil(db,u)});
+   const token=await signer(u,env.JWT_SECRET);return json({token,utilisateur:await profil(db,u)});
   }
   if((p==='/entreprises/inscription'||p==='/entreprises')&&m==='POST'){
    await limiter(db,request,'inscription',5,3600000);const email=String(b.email||'').trim().toLowerCase();exiger(b.nom?.trim()&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),'Nom d’entreprise et email valides requis.');const hash=await empreinte(b.mot_de_passe);exiger(!await db.get('SELECT id FROM users WHERE email=?',email),'Cette adresse possède déjà un compte.');
@@ -60,6 +66,7 @@ async function traiterRequete(request,env,ctx){
   for(const route of [routesDevises,routesRH,routesMails,routesPlateforme,routesRapports,routesAchats,routesInventaires,routesAbonnement,routesMessages,routesAdministration,routesCatalogue,routesVentes,routesTiers]){const resultat=await route(c);if(resultat!==undefined)return resultat instanceof Response?resultat:json(resultat,m==='POST'?201:200);}
   throw new MetierErreur('Cette route n’est pas disponible dans la version D1.',404);
  }catch(e){
+  const quota=erreurQuota(e);if(quota)return quota;
   if(/UNIQUE constraint failed/i.test(e.message))return json({erreur:'Cet enregistrement existe déjà.'},409);
   if(/CHECK constraint failed/i.test(e.message))return json({erreur:'Les données ont changé pendant l’opération. Actualisez et recommencez.'},409);
   if(e instanceof MetierErreur||e.status)return json({erreur:e.message,...e.details},e.status||400);

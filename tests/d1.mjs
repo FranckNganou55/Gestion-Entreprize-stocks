@@ -6,9 +6,9 @@ const sqlite=new Database(':memory:');
 sqlite.pragma('foreign_keys=ON');
 sqlite.exec(fs.readFileSync(new URL('../database/d1/0001_schema.sql',import.meta.url),'utf8'));
 sqlite.exec(fs.readFileSync('database/d1/0002_limites_auth.sql','utf8'));
-let count=0,avantLot=null;
-const binding={prepare(sql){let values=[];return{bind(...p){values=p.map(v=>v instanceof ArrayBuffer?Buffer.from(v):v);return this;},async first(){count++;return sqlite.prepare(sql).get(...values)||null;},async all(){count++;return{results:sqlite.prepare(sql).all(...values)};},async run(){count++;return{meta:sqlite.prepare(sql).run(...values)};},_run(){count++;return sqlite.prepare(sql).run(...values);}};},async batch(items){if(avantLot){const action=avantLot;avantLot=null;action();}return sqlite.transaction(()=>items.map(s=>s._run()))();}};
-const env={DB:binding,JWT_SECRET:'test-session-secret-native-d1-at-least-32',OWNER_EMAIL:'owner@example.test',OWNER_PASSWORD:'Test-Owner-2026!'};
+let count=0,avantLot=null,ecrituresInterdites=false;
+const binding={prepare(sql){if(ecrituresInterdites&&/^\s*(UPDATE|INSERT|DELETE|REPLACE)/i.test(sql))throw Error("D1_ERROR: Your account has exceeded D1's free tier daily row write limit.");let values=[];return{bind(...p){values=p.map(v=>v instanceof ArrayBuffer?Buffer.from(v):v);return this;},async first(){count++;return sqlite.prepare(sql).get(...values)||null;},async all(){count++;return{results:sqlite.prepare(sql).all(...values)};},async run(){count++;return{meta:sqlite.prepare(sql).run(...values)};},_run(){count++;return sqlite.prepare(sql).run(...values);}};},async batch(items){if(avantLot){const action=avantLot;avantLot=null;action();}return sqlite.transaction(()=>items.map(s=>s._run()))();}};
+const env={LOGIN_LIMITER:{limit:async()=>({success:true})},DB:binding,JWT_SECRET:'test-session-secret-native-d1-at-least-32',OWNER_EMAIL:'owner@example.test',OWNER_PASSWORD:'Test-Owner-2026!'};
 async function call(path,method='GET',body,token){count=0;const r=await traiterApi(new Request('https://test.invalid'+path,{method,headers:{...(body?{'Content-Type':'application/json'}:{}),...(token?{Authorization:'Bearer '+token}:{})},...(body?{body:JSON.stringify(body)}:{})}),env,{});const data=await r.json();assert.ok(count<=50,`${path}: ${count} queries exceeds Free limit`);return{status:r.status,data};}
 try{
  assert.equal((await call('/healthz')).status,200);
@@ -17,6 +17,11 @@ try{
  assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM users WHERE role='super_admin'").get().n,1);
  assert.equal((await call('/api/auth/login','POST',{email:env.OWNER_EMAIL,mot_de_passe:'wrong-password'})).status,401);
  const login=await call('/api/auth/login','POST',{email:env.OWNER_EMAIL,mot_de_passe:env.OWNER_PASSWORD});assert.equal(login.status,200,JSON.stringify(login.data));const owner=login.data.token;
+ ecrituresInterdites=true;
+ const quotaLogin=await call('/api/auth/login','POST',{email:env.OWNER_EMAIL,mot_de_passe:env.OWNER_PASSWORD});assert.equal(quotaLogin.status,200,'La connexion doit rester possible sans aucune écriture D1.');
+ assert.equal((await call('/api/auth/login','POST',{email:env.OWNER_EMAIL,mot_de_passe:'wrong-password'})).status,401);
+ env.LOGIN_LIMITER.limit=async()=>({success:false});assert.equal((await call('/api/auth/login','POST',{email:env.OWNER_EMAIL,mot_de_passe:env.OWNER_PASSWORD})).status,429);env.LOGIN_LIMITER.limit=async()=>({success:true});
+ const quotaMutation=await call('/api/produits','POST',{nom:'Test'},owner);assert.equal(quotaMutation.status,503);assert.equal(quotaMutation.data.code,'D1_QUOTA_ECRITURE');ecrituresInterdites=false;
  assert.equal((await call('/api/plateforme/entreprises','GET',null,owner)).status,200);
  const registration=await call('/api/entreprises/inscription','POST',{nom:'Entreprise test',email:'admin@example.test',mot_de_passe:'Test-Admin-2026!'});assert.equal(registration.status,201,JSON.stringify(registration.data));const admin=registration.data.token;
  const user=sqlite.prepare("SELECT * FROM users WHERE email='admin@example.test'").get();sqlite.prepare('UPDATE users SET email_verifie=1 WHERE id=?').run(user.id);

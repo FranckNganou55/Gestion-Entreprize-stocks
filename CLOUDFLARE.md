@@ -1,5 +1,7 @@
 # Cloudflare gratuit : Workers et D1
 
+Adresse publique : https://gestion-entreprize-stocks.inventa-gestypro.workers.dev/ . Le formulaire de connexion ne propose aucun compte de démonstration.
+
 Le déploiement par défaut utilise le backend natif `cloudflare/d1/worker.mjs`, les fichiers de `public/` et la base D1 `gestion_enterprize`. L’API et l’interface partagent le même domaine. Le PC WampServer n’a pas besoin de rester allumé.
 
 La version locale `npm start` reste Node.js/MySQL. Après migration, les bases locale et cloud sont indépendantes : aucune synchronisation automatique des nouvelles ventes.
@@ -40,9 +42,15 @@ L’identifiant et l’email du propriétaire sont conservés. MySQL utilise bcr
 npx wrangler d1 execute gestion_enterprize --remote --file data/d1/acces-proprietaire.sql
 ```
 
-Les autres comptes importés utilisant bcrypt doivent recevoir un mot de passe Cloudflare : dans la fiche d’entreprise du propriétaire, cliquer sur **Définir le mot de passe** à côté du compte concerné. L’administrateur peut ensuite gérer ses collaborateurs dans **Comptes & rôles**. Les comptes créés directement en ligne sont immédiatement compatibles. Les données métier restent intactes.
+Les onze comptes de cette migration ont été adaptés après vérification locale, sans changer leurs mots de passe. Pour un futur compte importé dont le mot de passe est encore au format bcrypt, il faut définir un mot de passe Cloudflare : dans la fiche d’entreprise du propriétaire, cliquer sur **Définir le mot de passe** à côté du compte concerné. L’administrateur peut ensuite gérer ses collaborateurs dans **Comptes & rôles**. Les comptes créés directement en ligne sont immédiatement compatibles. Les données métier restent intactes.
 
 Pour une installation neuve sans import : définir les secrets OWNER_EMAIL et OWNER_PASSWORD (12 caractères minimum), appeler POST /api/installation avec un objet JSON vide, puis retirer OWNER_PASSWORD. Un propriétaire PBKDF2 existant n’est pas remplacé.
+
+## Connexion et quotas
+
+La connexion ne réserve pas d’identifiants et n’écrit pas dans D1. Elle utilise LOGIN_LIMITER, la protection native Workers (12 tentatives par compte et par minute), puis vérifie le mot de passe et crée une session signée. Le champ dernier_login n’est plus modifié lors de cette opération.
+
+L’import initial a dépassé le quota quotidien d’écriture gratuit le 21 octobre 2026. Les lectures et les connexions restent possibles ; les écritures métier reprennent après la remise à zéro Cloudflare à minuit UTC, soit le 22 octobre à 1 h, heure du Cameroun. En cas de futur dépassement, une erreur D1_QUOTA_ECRITURE indique la reprise prévue. Aucun forfait payant n’a été activé.
 
 ## Services et limites
 
